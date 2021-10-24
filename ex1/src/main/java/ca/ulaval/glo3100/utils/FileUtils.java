@@ -94,6 +94,19 @@ public class FileUtils {
     }
 
     /**
+     * @param files Files to delete
+     */
+    public static File deleteFiles(List<File> files) {
+        for (File file : files) {
+            boolean result = file.delete();
+
+            if (!result) {
+                throw new IllegalArgumentException(String.format("Could not delete file %s", file.getPath()));
+            }
+        }
+    }
+
+    /**
      * @param directory Directory to create new file
      * @param filename Filename of new file
      * @param fileAsStrings List of file as strings (one line = filename, next line = content)

