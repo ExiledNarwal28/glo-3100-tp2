@@ -14,9 +14,9 @@ public class CipherUtils {
      * @param originalBytes Original bytes to encrypted
      * @param key Encryption key
      * @param iv Encryption IV
-     * @return Encrypted bytes
+     * @return Encrypted bytes for files (filename + content)
      */
-    public static List<byte[]> encrypt(List<byte[]> originalBytes, SecretKey key, IvParameterSpec iv) {
+    public static List<FileAsBytes> encrypt(List<FileAsBytes> originalBytes, SecretKey key, IvParameterSpec iv) {
         Cipher cipher;
 
         try {
@@ -26,11 +26,14 @@ public class CipherUtils {
             // Initiate Cipher with given key and iv
             cipher.init(Cipher.ENCRYPT_MODE, key, iv);
 
-            List<byte[]> encryptedBytes = new ArrayList<>();
+            List<FileAsBytes> encryptedBytes = new ArrayList<>();
 
             // Encrypt each bytes with cipher
-            for (byte[] originalByte : originalBytes) {
-                encryptedBytes.add(cipher.doFinal(originalByte));
+            for (FileAsBytes originalFile : originalBytes) {
+                byte[] filename = cipher.doFinal(originalFile.filename);
+                byte[] content = cipher.doFinal(originalFile.content);
+
+                encryptedBytes.add(new FileAsBytes(filename, content));
             }
 
             return encryptedBytes;

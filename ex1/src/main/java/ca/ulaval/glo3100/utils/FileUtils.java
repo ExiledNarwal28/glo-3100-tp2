@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FileUtils {
 
@@ -60,43 +59,55 @@ public class FileUtils {
 
     /**
      * @param files Files to convert to bytes
-     * @return List of bytes for each files
+     * @return List of bytes for each file (filename and content)
      */
-    public static List<byte[]> toBytes(List<File> files) {
-        return files.stream().map(file -> {
+    public static List<FileAsBytes> toBytes(List<File> files) {
+        List<FileAsBytes> fileAsBytes = new ArrayList<>();
+
+        for (File file : files) {
+            byte[] filename = file.getName().getBytes();
+            byte[] content;
+
             try {
-                return Files.readAllBytes(file.toPath());
+                content = Files.readAllBytes(file.toPath());
             } catch (IOException e) {
                 throw new IllegalArgumentException(String.format("File %s could not be converted to bytes.", file.getPath()));
             }
-        }).collect(Collectors.toList());
+
+            fileAsBytes.add(new FileAsBytes(filename, content));
+        }
+
+        return fileAsBytes;
     }
 
     /**
      * @param directory Directory to create new file
      * @param filename Filename of new file
-     * @param strings List of strings to write one per line
+     * @param fileAsStrings List of file as strings (one line = filename, next line = content)
      */
-    public static void saveStrings(File directory, String filename, List<String> strings) {
+    public static void saveStrings(File directory, String filename, List<FileAsStrings> fileAsStrings) {
         if (directory.isDirectory()) {
             File file = new File(directory, filename);
             FileWriter fileWriter;
 
             try {
+                // Open new file writer
                 fileWriter = new FileWriter(file);
             } catch (IOException e) {
                 throw new IllegalArgumentException("FileWrite could not be instantiated with given directory and filename");
             }
 
-            for (int i = 0; i < strings.size(); i++) {
+            for (int i = 0; i < fileAsStrings.size(); i++) {
                 try {
-                    fileWriter.write(strings.get(i));
+                    fileWriter.write(fileAsStrings.get(i).filename);
+                    fileWriter.write("\n");
+                    fileWriter.write(fileAsStrings.get(i).content);
                 } catch (IOException e) {
                     throw new IllegalArgumentException("Could not write to file");
                 }
 
                 // Add newline unless it's the last string
-                if (i > strings.size() - 1) {
+                if (i > fileAsStrings.size() - 1) {
                     try {
                         fileWriter.write("\n");
                     } catch (IOException e) {

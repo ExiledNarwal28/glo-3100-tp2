@@ -3,10 +3,7 @@ package ca.ulaval.glo3100.aes;
 import ca.ulaval.glo3100.args.Args;
 import ca.ulaval.glo3100.args.FileType;
 import ca.ulaval.glo3100.console.Logger;
-import ca.ulaval.glo3100.utils.ByteUtils;
-import ca.ulaval.glo3100.utils.CipherUtils;
-import ca.ulaval.glo3100.utils.RandomUtils;
-import ca.ulaval.glo3100.utils.FileUtils;
+import ca.ulaval.glo3100.utils.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -48,7 +45,7 @@ public class AESService {
                 files.stream().map(File::getPath).collect(Collectors.joining(", "))));
 
         // Convert files to bytes
-        List<byte[]> fileBytes = FileUtils.toBytes(files);
+        List<FileAsBytes> fileBytes = FileUtils.toBytes(files);
 
         SecretKey key = RandomUtils.generateKey();
         IvParameterSpec iv = RandomUtils.generateIv();
@@ -57,8 +54,8 @@ public class AESService {
         Logger.logDebug(String.format("IV : %s", iv.getIV().toString()));
 
         // Encrypt file bytes
-        List<byte[]> encryptedBytes = CipherUtils.encrypt(fileBytes, key, iv);
-        List<String> encryptedFiles = ByteUtils.toStrings(encryptedBytes);
+        List<FileAsBytes> encryptedBytes = CipherUtils.encrypt(fileBytes, key, iv);
+        List<FileAsStrings> encryptedFiles = ByteUtils.toStrings(encryptedBytes);
 
         FileUtils.saveStrings(directory, ENCRYPTED_FILES_FILENAME, encryptedFiles);
 
@@ -76,7 +73,7 @@ public class AESService {
         // TODO : Get encrypted files in pirate.txt (error otherwise)
         // TODO : Get used key and iv in pirate.json (error otherwise)
         // TODO : Decrypt files
-        // TODO : Save files to given directory (we might need to also save file names during encryption!)
+        // TODO : Save files to given directory
 
         // Display decryption message
         Logger.logInfo(String.format("Les fichiers ont été déchiffrés dans le répertoire %s", directory));

@@ -7,10 +7,13 @@ import java.util.stream.Collectors;
 public class ByteUtils {
 
     /**
-     * @param bytes List of bytes to convert
-     * @return List of bytes converted to list of base 64 strings
+     * @param bytes List of file as bytes bytes to convert
+     * @return List of file as bytes converted to list of file as base 64 strings
      */
-    public static List<String> toStrings(List<byte[]> bytes) {
-        return bytes.stream().map(Base64.getEncoder()::encodeToString).collect(Collectors.toList());
+    public static List<FileAsStrings> toStrings(List<FileAsBytes> bytes) {
+        return bytes.stream().map(fileAsBytes -> new FileAsStrings(
+                Base64.getEncoder().encodeToString(fileAsBytes.filename),
+                Base64.getEncoder().encodeToString(fileAsBytes.content)
+        )).collect(Collectors.toList());
     }
 }
