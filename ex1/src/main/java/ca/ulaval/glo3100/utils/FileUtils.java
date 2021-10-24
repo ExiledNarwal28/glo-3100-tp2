@@ -83,46 +83,55 @@ public class FileUtils {
     /**
      * @param directory Directory to create new file
      * @param filename Filename of new file
+     * @return newly created file
+     */
+    public static File createFile(File directory, String filename) {
+        if (directory.isDirectory()) {
+            return new File(directory, filename);
+        } else {
+            throw new IllegalArgumentException("Provided directory is not a directory");
+        }
+    }
+
+    /**
+     * @param directory Directory to create new file
+     * @param filename Filename of new file
      * @param fileAsStrings List of file as strings (one line = filename, next line = content)
      */
     public static void saveStrings(File directory, String filename, List<FileAsStrings> fileAsStrings) {
-        if (directory.isDirectory()) {
-            File file = new File(directory, filename);
-            FileWriter fileWriter;
+        File file = createFile(directory, filename);
+        FileWriter fileWriter;
 
+        try {
+            // Open new file writer
+            fileWriter = new FileWriter(file);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("FileWrite could not be instantiated with given directory and filename");
+        }
+
+        for (int i = 0; i < fileAsStrings.size(); i++) {
             try {
-                // Open new file writer
-                fileWriter = new FileWriter(file);
+                fileWriter.write(fileAsStrings.get(i).filename);
+                fileWriter.write("\n");
+                fileWriter.write(fileAsStrings.get(i).content);
             } catch (IOException e) {
-                throw new IllegalArgumentException("FileWrite could not be instantiated with given directory and filename");
+                throw new IllegalArgumentException("Could not write to file");
             }
 
-            for (int i = 0; i < fileAsStrings.size(); i++) {
+            // Add newline unless it's the last string
+            if (i > fileAsStrings.size() - 1) {
                 try {
-                    fileWriter.write(fileAsStrings.get(i).filename);
                     fileWriter.write("\n");
-                    fileWriter.write(fileAsStrings.get(i).content);
                 } catch (IOException e) {
                     throw new IllegalArgumentException("Could not write to file");
                 }
-
-                // Add newline unless it's the last string
-                if (i > fileAsStrings.size() - 1) {
-                    try {
-                        fileWriter.write("\n");
-                    } catch (IOException e) {
-                        throw new IllegalArgumentException("Could not write to file");
-                    }
-                }
             }
+        }
 
-            try {
-                fileWriter.close();
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Could not save file");
-            }
-        } else {
-            throw new IllegalArgumentException("Provided directory is not a directory");
+        try {
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not save file");
         }
     }
 }

