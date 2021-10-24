@@ -32,14 +32,28 @@ public class AESService {
                 directory,
                 fileTypes.stream().map(FileType::toString).collect(Collectors.joining(", "))));
 
-        // TODO : Encrypt
+        // TODO : Get each matching files in given directory
+        // TODO : Encrypt each file
+        // TODO : Build object of encrypted files (?)
+        // TODO : Save encrypted files to pirate.txt
+        // TODO : Build object of used key and iv
+        // TODO : Save used keys and iv to pirate.json
+
+        // Display ransom message
+        Logger.logInfo("Cet ordinateur est piraté, plusieurs fichiers ont été chiffrés, une rançon de 5000$ doit être payée sur le compte PayPal hacker@gmail.com pour pouvoir récupérer vos données.");
     }
 
     // TODO : Add javadocs
     private static void decrypt(File directory) {
         Logger.logDebug(String.format("Decrypting with directory %s", directory));
 
-        // TODO : Decrypt
+        // TODO : Get encrypted files in pirate.txt (error otherwise)
+        // TODO : Get used key and iv in pirate.json (error otherwise)
+        // TODO : Decrypt files
+        // TODO : Save files to given directory
+
+        // Display decryption message
+        Logger.logInfo(String.format("Les fichiers ont été déchiffrés dans le répertoire %s", directory));
     }
 
     // TODO : Remove this, it's temporary
