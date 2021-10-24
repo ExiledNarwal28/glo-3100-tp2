@@ -33,4 +33,21 @@ public class JsonUtils {
             throw new IllegalArgumentException("Could not save encryption params");
         }
     }
+
+    /**
+     * @param directory Directory to read file in
+     * @param filename Filename of file
+     * @return encryption params (key and iv)
+     */
+    public static EncryptionParams getEncryptionParams(File directory, String filename) {
+        // Get file for params
+        File file = FileUtils.getOrCreateFile(directory, filename);
+
+        // Read encryption params from JSON
+        try {
+            return new ObjectMapper().readValue(file, EncryptionParams.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not read encryption params");
+        }
+    }
 }
