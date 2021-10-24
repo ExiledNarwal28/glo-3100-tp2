@@ -3,6 +3,7 @@ package ca.ulaval.glo3100.aes;
 import ca.ulaval.glo3100.args.Args;
 import ca.ulaval.glo3100.args.FileType;
 import ca.ulaval.glo3100.console.Logger;
+import ca.ulaval.glo3100.utils.ByteUtils;
 import ca.ulaval.glo3100.utils.CipherUtils;
 import ca.ulaval.glo3100.utils.RandomUtils;
 import ca.ulaval.glo3100.utils.FileUtils;
@@ -23,8 +24,10 @@ public class AESService {
         switch (args.operation) {
             case ENCRYPT:
                 encrypt(args.directory, args.fileTypes);
+                break;
             case DECRYPT:
                 decrypt(args.directory);
+                break;
         }
     }
 
@@ -52,8 +55,8 @@ public class AESService {
         Logger.logDebug(String.format("IV : %s", iv.getIV().toString()));
 
         List<byte[]> encryptedBytes = CipherUtils.encrypt(fileBytes, key, iv);
+        List<String> encryptedFiles = ByteUtils.toStrings(encryptedBytes);
 
-        // TODO : Build object of encrypted files (?)
         // TODO : Save encrypted files to pirate.txt
         // TODO : Build object of used key and iv
         // TODO : Save used keys and iv to pirate.json
@@ -69,7 +72,7 @@ public class AESService {
         // TODO : Get encrypted files in pirate.txt (error otherwise)
         // TODO : Get used key and iv in pirate.json (error otherwise)
         // TODO : Decrypt files
-        // TODO : Save files to given directory
+        // TODO : Save files to given directory (we might need to also save file names during encryption!)
 
         // Display decryption message
         Logger.logInfo(String.format("Les fichiers ont été déchiffrés dans le répertoire %s", directory));
