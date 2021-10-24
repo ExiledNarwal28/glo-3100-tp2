@@ -2,6 +2,7 @@ package ca.ulaval.glo3100.args;
 
 import ca.ulaval.glo3100.console.Logger;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,14 +15,14 @@ public class ArgsAssembler {
 
     public static Args assemble(String[] args) {
         // Default values
-        String directory = ""; // TODO : By default, set current directory
+        String stringDirectory = System.getProperty("user.dir"); // Default directory is current directory
         List<FileType> fileTypes = new ArrayList<>();
         Operation operation = null;
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]){
                 case DIRECTORY_ARG:
-                    directory = args[i + 1];
+                    stringDirectory = args[i + 1];
                     break;
                 case FILE_TYPE_ARG:
                     fileTypes.add(FileType.get(args[i + 1]));
@@ -47,6 +48,19 @@ public class ArgsAssembler {
             if (!fileTypes.isEmpty()) {
                 throw new IllegalArgumentException("No file types should be provided when decrypting");
             }
+        }
+
+        // Converting string directory to actual directory
+        File directory;
+
+        try {
+            directory = new File(stringDirectory);
+        } catch(Exception e) {
+            throw new IllegalArgumentException("Provided directory is invalid");
+        }
+
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException("Provided directory is not a directory");
         }
 
         return new Args(directory, fileTypes, operation);

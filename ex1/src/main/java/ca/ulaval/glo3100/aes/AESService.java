@@ -8,6 +8,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import java.io.File;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.List;
@@ -25,7 +26,7 @@ public class AESService {
     }
 
     // TODO : Add javadocs
-    private static void encrypt(String directory, List<FileType> fileTypes) {
+    private static void encrypt(File directory, List<FileType> fileTypes) {
         Logger.logDebug(String.format(
                 "Encrypting with directory %s and file types %s",
                 directory,
@@ -35,7 +36,7 @@ public class AESService {
     }
 
     // TODO : Add javadocs
-    private static void decrypt(String directory) {
+    private static void decrypt(File directory) {
         Logger.logDebug(String.format("Decrypting with directory %s", directory));
 
         // TODO : Decrypt
