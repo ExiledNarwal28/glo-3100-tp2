@@ -75,7 +75,9 @@ public class AESService {
         Logger.logInfo("Cet ordinateur est piraté, plusieurs fichiers ont été chiffrés, une rançon de 5000$ doit être payée sur le compte PayPal hacker@gmail.com pour pouvoir récupérer vos données.");
     }
 
-    // TODO : Add javadocs
+    /**
+     * @param directory Directory to decrypt files from
+     */
     private static void decrypt(File directory) {
         Logger.logDebug(String.format("Decrypting with directory %s", directory));
 
