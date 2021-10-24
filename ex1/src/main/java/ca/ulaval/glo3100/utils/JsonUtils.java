@@ -24,7 +24,7 @@ public class JsonUtils {
         );
 
         // Create file to save params
-        File file = FileUtils.createFile(directory, filename);
+        File file = FileUtils.getOrCreateFile(directory, filename);
 
         // Write encryption params as JSON
         try {

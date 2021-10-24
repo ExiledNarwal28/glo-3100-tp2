@@ -6,9 +6,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileUtils {
 
@@ -81,11 +84,11 @@ public class FileUtils {
     }
 
     /**
-     * @param directory Directory to create new file
-     * @param filename Filename of new file
-     * @return newly created file
+     * @param directory Directory to get or create file
+     * @param filename Filename of file
+     * @return existing or newly created file
      */
-    public static File createFile(File directory, String filename) {
+    public static File getOrCreateFile(File directory, String filename) {
         if (directory.isDirectory()) {
             return new File(directory, filename);
         } else {
@@ -112,7 +115,7 @@ public class FileUtils {
      * @param fileAsStrings List of file as strings (one line = filename, next line = content)
      */
     public static void saveStrings(File directory, String filename, List<FileAsStrings> fileAsStrings) {
-        File file = createFile(directory, filename);
+        File file = getOrCreateFile(directory, filename);
         FileWriter fileWriter;
 
         try {
@@ -146,5 +149,25 @@ public class FileUtils {
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not save file");
         }
+    }
+
+    public static List<FileAsStrings> getFileAsStrings(File directory, String filename) {
+        File file = getOrCreateFile(directory, filename);
+
+        // Get lines in file
+        List<String> lines;
+        try {
+            lines = Files.lines(Paths.get(file.getPath())).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not read file");
+        }
+
+        // Get encrypted filename and content
+        List<FileAsStrings> fileAsStrings = new ArrayList<>();
+        for (int i = 0; i < lines.size(); i += 2) {
+            fileAsStrings.add(new FileAsStrings(lines.get(i), lines.get(i + 1)));
+        }
+
+        return fileAsStrings;
     }
 }

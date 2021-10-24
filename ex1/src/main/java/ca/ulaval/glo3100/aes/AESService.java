@@ -79,7 +79,10 @@ public class AESService {
     private static void decrypt(File directory) {
         Logger.logDebug(String.format("Decrypting with directory %s", directory));
 
-        // TODO : Get encrypted files in pirate.txt (error otherwise)
+        // Get encrypted files in pirate.txt
+        List<FileAsStrings> fileAsStrings = FileUtils.getFileAsStrings(directory, ENCRYPTED_FILES_FILENAME);
+        Logger.logDebug(String.format("Read encrypted files from %s", ENCRYPTED_FILES_FILENAME));
+
         // TODO : Get used key and iv in pirate.json (error otherwise)
         // TODO : Decrypt files
         // TODO : Save files to given directory
