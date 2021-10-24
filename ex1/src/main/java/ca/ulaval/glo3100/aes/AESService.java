@@ -33,13 +33,16 @@ public class AESService {
                 directory,
                 fileTypes.stream().map(FileType::toString).collect(Collectors.joining(", "))));
 
+        // Get files in directory
         List<File> files = FileUtils.getFiles(directory, fileTypes);
 
         Logger.logDebug(String.format(
                 "Files : %s",
                 files.stream().map(File::getPath).collect(Collectors.joining(", "))));
 
-        // TODO : Get files as bytes
+        // Convert files to bytes
+        List<byte[]> fileByte = FileUtils.toBytes(files);
+
         // TODO : Generate key and iv
         // TODO : Encrypt each file
         // TODO : Build object of encrypted files (?)

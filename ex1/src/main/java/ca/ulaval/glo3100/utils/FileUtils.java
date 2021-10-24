@@ -1,11 +1,16 @@
 package ca.ulaval.glo3100.utils;
 
 import ca.ulaval.glo3100.args.FileType;
+import ca.ulaval.glo3100.console.Logger;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileUtils {
 
@@ -52,5 +57,21 @@ public class FileUtils {
         }
 
         return files;
+    }
+
+    /**
+     * @param files Files to convert to bytes
+     * @return List of bytes for each files
+     */
+    public static List<byte[]> toBytes(List<File> files) {
+        return files.stream().map(file -> {
+            try {
+                return Files.readAllBytes(file.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                Logger.logInfo(String.format("File %s could not be converted to bytes.", file.getPath()));
+                return new byte[] {};
+            }
+        }).collect(Collectors.toList());
     }
 }
