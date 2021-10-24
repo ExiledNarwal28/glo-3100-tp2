@@ -1,9 +1,9 @@
 package ca.ulaval.glo3100.utils;
 
 import ca.ulaval.glo3100.args.FileType;
-import ca.ulaval.glo3100.console.Logger;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -67,10 +67,51 @@ public class FileUtils {
             try {
                 return Files.readAllBytes(file.toPath());
             } catch (IOException e) {
-                e.printStackTrace();
-                Logger.logInfo(String.format("File %s could not be converted to bytes.", file.getPath()));
-                return new byte[] {};
+                throw new IllegalArgumentException(String.format("File %s could not be converted to bytes.", file.getPath()));
             }
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * @param directory Directory to create new file
+     * @param filename Filename of new file
+     * @param strings List of strings to write one per line
+     */
+    public static void saveStrings(File directory, String filename, List<String> strings) {
+        if (directory.isDirectory()) {
+            File file = new File(directory, filename);
+            FileWriter fileWriter;
+
+            try {
+                fileWriter = new FileWriter(file);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("FileWrite could not be instantiated with given directory and filename");
+            }
+
+            for (int i = 0; i < strings.size(); i++) {
+                try {
+                    fileWriter.write(strings.get(i));
+                } catch (IOException e) {
+                    throw new IllegalArgumentException("Could not write to file");
+                }
+
+                // Add newline unless it's the last string
+                if (i > strings.size() - 1) {
+                    try {
+                        fileWriter.write("\n");
+                    } catch (IOException e) {
+                        throw new IllegalArgumentException("Could not write to file");
+                    }
+                }
+            }
+
+            try {
+                fileWriter.close();
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Could not save file");
+            }
+        } else {
+            throw new IllegalArgumentException("Provided directory is not a directory");
+        }
     }
 }

@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 public class AESService {
 
+    private static final String ENCRYPTED_FILES_FILENAME = "pirate.txt";
+
     public static void execute(Args args) {
         switch (args.operation) {
             case ENCRYPT:
@@ -54,10 +56,12 @@ public class AESService {
         Logger.logDebug(String.format("Key : %s", key.getEncoded().toString()));
         Logger.logDebug(String.format("IV : %s", iv.getIV().toString()));
 
+        // Encrypt file bytes
         List<byte[]> encryptedBytes = CipherUtils.encrypt(fileBytes, key, iv);
         List<String> encryptedFiles = ByteUtils.toStrings(encryptedBytes);
 
-        // TODO : Save encrypted files to pirate.txt
+        FileUtils.saveStrings(directory, ENCRYPTED_FILES_FILENAME, encryptedFiles);
+
         // TODO : Build object of used key and iv
         // TODO : Save used keys and iv to pirate.json
 

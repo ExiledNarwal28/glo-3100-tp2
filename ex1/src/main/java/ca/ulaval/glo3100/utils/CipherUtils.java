@@ -1,7 +1,5 @@
 package ca.ulaval.glo3100.utils;
 
-import ca.ulaval.glo3100.console.Logger;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -37,9 +35,7 @@ public class CipherUtils {
 
             return encryptedBytes;
         } catch (Exception e) {
-            e.printStackTrace();
-            Logger.logDebug(String.format("Encryption %s was not found", ENCRYPTION));
-            return new ArrayList<>();
+            throw new IllegalArgumentException(String.format("Encryption %s was not found", ENCRYPTION));
         }
     }
 }

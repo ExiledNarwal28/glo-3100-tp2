@@ -1,7 +1,5 @@
 package ca.ulaval.glo3100.utils;
 
-import ca.ulaval.glo3100.console.Logger;
-
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -23,9 +21,7 @@ public class RandomUtils {
         try {
             keyGen = KeyGenerator.getInstance(ENCRYPTION_ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            Logger.logDebug(String.format("%s was not found in KeyGenerator.", ENCRYPTION_ALGORITHM));
-            return null;
+            throw new IllegalArgumentException(String.format("%s was not found in KeyGenerator.", ENCRYPTION_ALGORITHM));
         }
 
         // Initialize key length
