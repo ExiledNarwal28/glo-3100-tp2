@@ -3,6 +3,7 @@ package ca.ulaval.glo3100.aes;
 import ca.ulaval.glo3100.args.Args;
 import ca.ulaval.glo3100.args.FileType;
 import ca.ulaval.glo3100.console.Logger;
+import ca.ulaval.glo3100.utils.FileUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -32,7 +33,14 @@ public class AESService {
                 directory,
                 fileTypes.stream().map(FileType::toString).collect(Collectors.joining(", "))));
 
-        // TODO : Get each matching files in given directory
+        List<File> files = FileUtils.getFiles(directory, fileTypes);
+
+        Logger.logDebug(String.format(
+                "Files : %s",
+                files.stream().map(File::getPath).collect(Collectors.joining(", "))));
+
+        // TODO : Get files as bytes
+        // TODO : Generate key and iv
         // TODO : Encrypt each file
         // TODO : Build object of encrypted files (?)
         // TODO : Save encrypted files to pirate.txt

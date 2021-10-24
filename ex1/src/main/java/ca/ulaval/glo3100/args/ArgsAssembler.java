@@ -1,6 +1,7 @@
 package ca.ulaval.glo3100.args;
 
 import ca.ulaval.glo3100.console.Logger;
+import ca.ulaval.glo3100.utils.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,17 +52,7 @@ public class ArgsAssembler {
         }
 
         // Converting string directory to actual directory
-        File directory;
-
-        try {
-            directory = new File(stringDirectory);
-        } catch(Exception e) {
-            throw new IllegalArgumentException("Provided directory is invalid");
-        }
-
-        if (!directory.isDirectory()) {
-            throw new IllegalArgumentException("Provided directory is not a directory");
-        }
+        File directory = FileUtils.getDirectory(stringDirectory);
 
         return new Args(directory, fileTypes, operation);
     }
