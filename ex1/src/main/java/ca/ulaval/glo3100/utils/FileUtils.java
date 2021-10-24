@@ -96,7 +96,7 @@ public class FileUtils {
     /**
      * @param files Files to delete
      */
-    public static File deleteFiles(List<File> files) {
+    public static void deleteFiles(List<File> files) {
         for (File file : files) {
             boolean result = file.delete();
 
