@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class FileUtils {
     public static List<File> getFiles(File directory, List<FileType> fileTypes) {
         List<File> files = new ArrayList<>();
 
+        // Get each files matching given file types
         File[] filesArray = directory.listFiles((dir, name) -> {
             for (FileType fileType : fileTypes) {
                 if (name.endsWith(String.format(".%s", fileType))) {
@@ -70,7 +72,7 @@ public class FileUtils {
         List<FileAsBytes> fileAsBytes = new ArrayList<>();
 
         for (File file : files) {
-            byte[] filename = file.getName().getBytes();
+            byte[] filename = file.getName().getBytes(StandardCharsets.UTF_8);
             byte[] content;
 
             try {
