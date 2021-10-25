@@ -100,7 +100,7 @@ public class AESService {
         List<FileAsBytes> decryptedFilesAsBytes = CipherUtils.decrypt(filesAsBytes, key, iv);
 
         // Save files to given directory
-        FileUtils.saveFiles(directory, decryptedFilesAsBytes);
+        FileUtils.saveFilesAsBytes(directory, decryptedFilesAsBytes);
 
         // Display decryption message
         Logger.logInfo(String.format("Les fichiers ont été déchiffrés dans le répertoire %s", directory));

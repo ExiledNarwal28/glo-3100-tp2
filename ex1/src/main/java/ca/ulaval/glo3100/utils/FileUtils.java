@@ -154,8 +154,8 @@ public class FileUtils {
     }
 
     // TODO : Add javadoc
-    public static void saveFiles(File directory, List<FileAsBytes> decryptedFilesAsBytes) {
-        for (FileAsBytes decryptedFilesAsByte : decryptedFilesAsBytes) {
+    public static void saveFilesAsBytes(File directory, List<FileAsBytes> filesAsBytes) {
+        for (FileAsBytes decryptedFilesAsByte : filesAsBytes) {
             String filename = Base64.getEncoder().encodeToString(decryptedFilesAsByte.filename);
             File file = getOrCreateFile(directory, filename);
 
@@ -163,7 +163,7 @@ public class FileUtils {
                 // Write bytes to file
                 fileOutputStream.write(decryptedFilesAsByte.content);
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                throw new IllegalArgumentException("Could not write file");
             }
         }
     }
