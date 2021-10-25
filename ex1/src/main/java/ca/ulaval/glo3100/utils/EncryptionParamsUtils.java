@@ -3,14 +3,26 @@ package ca.ulaval.glo3100.utils;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
-public class RandomUtils {
+public class EncryptionParamsUtils {
 
     private static final String ENCRYPTION_ALGORITHM = "AES";
     private static final int KEY_SIZE = 128;
     private static final int IV_SIZE = 16;
+
+    public static SecretKey toSecretKey(String keyAsString) {
+        byte[] key = Base64.getDecoder().decode(keyAsString);
+        return new SecretKeySpec(key, 0, key.length, ENCRYPTION_ALGORITHM);
+    }
+
+    public static IvParameterSpec toIvParameterSpec(String ivAsString) {
+        byte[] iv = Base64.getDecoder().decode(ivAsString);
+        return new IvParameterSpec(iv);
+    }
 
     /**
      * @return Newly randomly generated key

@@ -3,12 +3,14 @@ package ca.ulaval.glo3100.utils;
 import ca.ulaval.glo3100.args.FileType;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -114,7 +116,7 @@ public class FileUtils {
      * @param filename Filename of new file
      * @param fileAsStrings List of file as strings (one line = filename, next line = content)
      */
-    public static void saveStrings(File directory, String filename, List<FileAsStrings> fileAsStrings) {
+    public static void saveFilesAsStrings(File directory, String filename, List<FileAsStrings> fileAsStrings) {
         File file = getOrCreateFile(directory, filename);
         FileWriter fileWriter;
 
@@ -151,7 +153,23 @@ public class FileUtils {
         }
     }
 
-    public static List<FileAsStrings> getFileAsStrings(File directory, String filename) {
+    // TODO : Add javadoc
+    public static void saveFiles(File directory, List<FileAsBytes> decryptedFilesAsBytes) {
+        for (FileAsBytes decryptedFilesAsByte : decryptedFilesAsBytes) {
+            String filename = Base64.getEncoder().encodeToString(decryptedFilesAsByte.filename);
+            File file = getOrCreateFile(directory, filename);
+
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                // Write bytes to file
+                fileOutputStream.write(decryptedFilesAsByte.content);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+    }
+
+    // TODO : Add javadoc
+    public static List<FileAsStrings> getFilesAsStrings(File directory, String filename) {
         File file = getOrCreateFile(directory, filename);
 
         // Get lines in file
