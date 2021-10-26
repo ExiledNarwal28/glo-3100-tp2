@@ -155,22 +155,29 @@ public class FileUtils {
         }
     }
 
-    // TODO : Add javadoc
+    /**
+     * @param directory Directory to save files in
+     * @param filesAsBytes Files as bytes to save
+     */
     public static void saveFilesAsBytes(File directory, List<FileAsBytes> filesAsBytes) {
-        for (FileAsBytes decryptedFilesAsByte : filesAsBytes) {
-            String filename = Base64.getEncoder().encodeToString(decryptedFilesAsByte.filename);
+        for (FileAsBytes fileAsByte : filesAsBytes) {
+            String filename = Base64.getEncoder().encodeToString(fileAsByte.filename);
             File file = getOrCreateFile(directory, filename);
 
             try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
                 // Write bytes to file
-                fileOutputStream.write(decryptedFilesAsByte.content);
+                fileOutputStream.write(fileAsByte.content);
             } catch (IOException ioe) {
                 throw new IllegalArgumentException("Could not write file");
             }
         }
     }
 
-    // TODO : Add javadoc
+    /**
+     * @param directory Directory to search for file in
+     * @param filename Name of file containing each file as strings
+     * @return Files as strings for given directory and filename
+     */
     public static List<FileAsStrings> getFilesAsStrings(File directory, String filename) {
         File file = getOrCreateFile(directory, filename);
 
