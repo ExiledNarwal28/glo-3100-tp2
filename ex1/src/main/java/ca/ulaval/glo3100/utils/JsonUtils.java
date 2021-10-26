@@ -7,6 +7,7 @@ import javax.crypto.spec.IvParameterSpec;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 
 public class JsonUtils {
 
@@ -16,11 +17,12 @@ public class JsonUtils {
      * @param key Key to save
      * @param iv IV to save
      */
-    public static void saveEncryptionParams(File directory, String filename, SecretKey key, IvParameterSpec iv) {
+    public static void saveEncryptionParams(File directory, String filename, SecretKey key, IvParameterSpec iv, List<String> filenames) {
         // Created encryption params
         EncryptionParams encryptionParams = new EncryptionParams(
                 Base64.getEncoder().encodeToString(key.getEncoded()),
-                Base64.getEncoder().encodeToString(iv.getIV())
+                Base64.getEncoder().encodeToString(iv.getIV()),
+                filenames
         );
 
         // Create file to save params

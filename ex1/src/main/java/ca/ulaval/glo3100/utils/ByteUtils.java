@@ -7,24 +7,18 @@ import java.util.stream.Collectors;
 public class ByteUtils {
 
     /**
-     * @param filesAsBytes List of file as bytes to convert
-     * @return List of file as bytes converted to list of file as base 64 strings
+     * @param listOfBytes List of bytes to convert
+     * @return List of bytes converted to list of base 64 strings
      */
-    public static List<FileAsStrings> toStrings(List<FileAsBytes> filesAsBytes) {
-        return filesAsBytes.stream().map(fileAsBytes -> new FileAsStrings(
-                Base64.getEncoder().encodeToString(fileAsBytes.filename),
-                Base64.getEncoder().encodeToString(fileAsBytes.content)
-        )).collect(Collectors.toList());
+    public static List<String> toStrings(List<byte[]> listOfBytes) {
+        return listOfBytes.stream().map(bytes -> Base64.getEncoder().encodeToString(bytes)).collect(Collectors.toList());
     }
 
     /**
-     * @param filesAsStrings List of file as strings to convert
-     * @return List of file as strings converted to list of file as bytes
+     * @param listOfStrings List of strings to convert
+     * @return List of strings converted to list of bytes
      */
-    public static List<FileAsBytes> toBytes(List<FileAsStrings> filesAsStrings) {
-        return filesAsStrings.stream().map(fileAsStrings -> new FileAsBytes(
-                Base64.getDecoder().decode(fileAsStrings.filename),
-                Base64.getDecoder().decode(fileAsStrings.content)
-        )).collect(Collectors.toList());
+    public static List<byte[]> toBytes(List<String> listOfStrings) {
+        return listOfStrings.stream().map(string -> Base64.getDecoder().decode(string)).collect(Collectors.toList());
     }
 }

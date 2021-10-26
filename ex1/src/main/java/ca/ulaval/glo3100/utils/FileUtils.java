@@ -67,11 +67,10 @@ public class FileUtils {
      * @param files Files to convert to bytes
      * @return List of bytes for each file (filename and content)
      */
-    public static List<FileAsBytes> toBytes(List<File> files) {
-        List<FileAsBytes> fileAsBytes = new ArrayList<>();
+    public static List<byte[]> toBytes(List<File> files) {
+        List<byte[]> fileAsBytes = new ArrayList<>();
 
         for (File file : files) {
-            byte[] filename = file.getName().getBytes(StandardCharsets.UTF_8);
             byte[] content;
 
             try {
@@ -80,7 +79,7 @@ public class FileUtils {
                 throw new IllegalArgumentException(String.format("File %s could not be converted to bytes.", file.getPath()));
             }
 
-            fileAsBytes.add(new FileAsBytes(filename, content));
+            fileAsBytes.add(content);
         }
 
         return fileAsBytes;
@@ -115,9 +114,9 @@ public class FileUtils {
     /**
      * @param directory Directory to create new file
      * @param filename Filename of new file
-     * @param fileAsStrings List of file as strings (one line = filename, next line = content)
+     * @param fileAsStrings List of file as strings
      */
-    public static void saveFilesAsStrings(File directory, String filename, List<FileAsStrings> fileAsStrings) {
+    public static void saveFilesAsStrings(File directory, String filename, List<String> fileAsStrings) {
         File file = getOrCreateFile(directory, filename);
         FileWriter fileWriter;
 
@@ -130,9 +129,7 @@ public class FileUtils {
 
         for (int i = 0; i < fileAsStrings.size(); i++) {
             try {
-                fileWriter.write(fileAsStrings.get(i).filename);
-                fileWriter.write("\n");
-                fileWriter.write(fileAsStrings.get(i).content);
+                fileWriter.write(fileAsStrings.get(i));
             } catch (IOException e) {
                 throw new IllegalArgumentException("Could not write to file");
             }
@@ -158,14 +155,17 @@ public class FileUtils {
      * @param directory Directory to save files in
      * @param filesAsBytes Files as bytes to save
      */
-    public static void saveFilesAsBytes(File directory, List<FileAsBytes> filesAsBytes) {
-        for (FileAsBytes fileAsByte : filesAsBytes) {
-            String filename = Base64.getEncoder().encodeToString(fileAsByte.filename);
-            File file = getOrCreateFile(directory, filename);
+    public static void saveFilesAsBytes(File directory, List<String> filenames, List<byte[]> filesAsBytes) {
+        if (filenames.size() != filesAsBytes.size()) {
+            throw new IllegalArgumentException("Size of given filenames and files as bytes do not match");
+        }
+
+        for (int i = 0; i < filesAsBytes.size(); i++) {
+            File file = getOrCreateFile(directory, filenames.get(i));
 
             try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
                 // Write bytes to file
-                fileOutputStream.write(fileAsByte.content);
+                fileOutputStream.write(filesAsBytes.get(i));
             } catch (IOException ioe) {
                 throw new IllegalArgumentException("Could not write file");
             }
@@ -177,7 +177,7 @@ public class FileUtils {
      * @param filename Name of file containing each file as strings
      * @return Files as strings for given directory and filename
      */
-    public static List<FileAsStrings> getFilesAsStrings(File directory, String filename) {
+    public static List<String> getFilesAsStrings(File directory, String filename) {
         File file = getOrCreateFile(directory, filename);
 
         // Get lines in file
@@ -188,12 +188,6 @@ public class FileUtils {
             throw new IllegalArgumentException("Could not read file");
         }
 
-        // Get encrypted filename and content
-        List<FileAsStrings> fileAsStrings = new ArrayList<>();
-        for (int i = 0; i < lines.size(); i += 2) {
-            fileAsStrings.add(new FileAsStrings(lines.get(i), lines.get(i + 1)));
-        }
-
-        return fileAsStrings;
+        return lines;
     }
 }

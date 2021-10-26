@@ -43,13 +43,14 @@ public class AESService {
 
         // Get files in directory
         List<File> files = FileUtils.getFiles(directory, fileTypes);
+        List<String> filenames = files.stream().map(file -> file.getName()).collect(Collectors.toList());
 
         Logger.logDebug(String.format(
                 "Files : %s",
                 files.stream().map(File::getPath).collect(Collectors.joining(", "))));
 
         // Convert files to bytes
-        List<FileAsBytes> filesAsBytes = FileUtils.toBytes(files);
+        List<byte[]> filesAsBytes = FileUtils.toBytes(files);
 
         SecretKey key = EncryptionParamsUtils.generateKey();
         Logger.logDebug(String.format("Key : %s", Base64.getEncoder().encodeToString(key.getEncoded())));
@@ -57,15 +58,15 @@ public class AESService {
         Logger.logDebug(String.format("IV : %s", Base64.getEncoder().encodeToString(iv.getIV())));
 
         // Encrypt file bytes
-        List<FileAsBytes> encryptedFilesAsBytes = CipherUtils.encrypt(filesAsBytes, key, iv);
-        List<FileAsStrings> encryptedFilesAsStrings = ByteUtils.toStrings(encryptedFilesAsBytes);
+        List<byte[]> encryptedFilesAsBytes = CipherUtils.encrypt(filesAsBytes, key, iv);
+        List<String> encryptedFilesAsStrings = ByteUtils.toStrings(encryptedFilesAsBytes);
 
         // Save filenames and contents to pirate.txt
         FileUtils.saveFilesAsStrings(directory, ENCRYPTED_FILES_FILENAME, encryptedFilesAsStrings);
         Logger.logDebug(String.format("Save encrypted files to %s", ENCRYPTED_FILES_FILENAME));
 
         // Save key and iv to pirate.json
-        JsonUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv);
+        JsonUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv, filenames);
         Logger.logDebug(String.format("Save key and iv to %s", ENCRYPTION_PARAMS_FILENAME));
 
         // Delete files
@@ -82,7 +83,7 @@ public class AESService {
         Logger.logDebug(String.format("Decrypting with directory %s", directory));
 
         // Get encrypted files from pirate.txt
-        List<FileAsStrings> filesAsStrings = FileUtils.getFilesAsStrings(directory, ENCRYPTED_FILES_FILENAME);
+        List<String> filesAsStrings = FileUtils.getFilesAsStrings(directory, ENCRYPTED_FILES_FILENAME);
         Logger.logDebug(String.format("Read encrypted files from %s", ENCRYPTED_FILES_FILENAME));
 
         // Get encryption params (key and iv) from pirate.json
@@ -94,94 +95,15 @@ public class AESService {
         IvParameterSpec iv = EncryptionParamsUtils.toIvParameterSpec(encryptionParams.iv);
 
         // Convert files as strings to files as bytes
-        List<FileAsBytes> filesAsBytes = ByteUtils.toBytes(filesAsStrings);
+        List<byte[]> filesAsBytes = ByteUtils.toBytes(filesAsStrings);
 
         // Decrypt files as strings
-        List<FileAsBytes> decryptedFilesAsBytes = CipherUtils.decrypt(filesAsBytes, key, iv);
+        List<byte[]> decryptedFilesAsBytes = CipherUtils.decrypt(filesAsBytes, key, iv);
 
         // Save files to given directory
-        FileUtils.saveFilesAsBytes(directory, decryptedFilesAsBytes);
+        FileUtils.saveFilesAsBytes(directory, encryptionParams.filenames, decryptedFilesAsBytes);
 
         // Display decryption message
         Logger.logInfo(String.format("Les fichiers ont été déchiffrés dans le répertoire %s", directory));
-    }
-
-    // TODO : Remove this, it's temporary
-    public static void tempExecute() {
-        String originalString = "Hello world";
-
-        try {
-            // Créer une instance d'un générateur de clés AES
-            KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-            // Initialiser la taille de la clé
-            keyGen.init(128);
-            // Générer aléatoirement une clé AES de 128 bits
-            SecretKey key = keyGen.generateKey();
-
-            // Créer une instance d'un générateur aléatoire sécuritaire
-            SecureRandom random = new SecureRandom();
-            // Générer iv aléatoirement de 16 octes
-            byte[] iv0 = random.generateSeed(16);
-            IvParameterSpec iv = new IvParameterSpec(iv0);
-
-            String encryptedString = AESService.tempEncrypt(originalString, key, iv);
-
-            String decryptedString = AESService.tempDecrypt(encryptedString, key, iv);
-
-            System.out.println("original String : " + originalString);
-            System.out.println("encrypted String en base64: " + encryptedString);
-            System.out.println("decrypted String :" + decryptedString);
-        } catch(Exception ex){
-            System.out.println(ex.getMessage());
-        }
-    }
-
-    // TODO : Remove this, it's to test
-    /*Fonction de chiffrement : elle prend le message à chiffrer, la clé et iv et elle retourne le message chiffré en base64*/
-    public static String tempEncrypt(String strToEncrypt, SecretKey key, IvParameterSpec iv) {
-        try {
-            // Créer une instance d'un algorithme AES avec un mode CBC et un padding de type PKCS5
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
-            // Initialier la clé, iv et indiquer qu'il s'agit d'un chifrement
-            cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-
-            // Chiffrer le message
-            byte[] encrypted =cipher.doFinal(strToEncrypt.getBytes("UTF-8"));
-
-            // Encoder le résultat en base64
-            String encryptedBase64 = Base64.getEncoder().encodeToString(encrypted);
-
-            return encryptedBase64;
-        }
-        catch (Exception e) {
-            // En cas d'erreur, afficher un message et retourner la chaine nulle comme résultat
-            System.out.println("Error while encrypting: " + e.toString());
-            return null;
-        }
-    }
-
-    // TODO : Remove this, it's to test
-    /*Fonction de déchiffrement : elle prend le message à déchiffrer en base64, la clé et iv et elle retourne le message clair correspondant*/
-    public static String tempDecrypt(String strToDecrypt, SecretKey key, IvParameterSpec iv) {
-        try {
-            //créer une instance d'un algorithme AES avec un mode CBC et un padding de type PKCS5
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
-            //initialier la clé, iv et indiquer qu'il s'agit d'un déchifrement
-            cipher.init(Cipher.DECRYPT_MODE, key, iv);
-
-            //Décoder le message chiffré de sa forme base64
-            byte[] encryptedBytes = Base64.getDecoder().decode(strToDecrypt);
-
-            //déchifrer le message
-            byte[] original = cipher.doFinal(encryptedBytes);
-            return new String(original);
-        }
-        catch (Exception e) {
-            // En cas d'erreur, afficher un message et retourner la chaine nulle comme résultat
-            System.out.println("Error while decrypting: " + e.toString());
-            return null;
-        }
     }
 }

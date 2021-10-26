@@ -16,7 +16,7 @@ public class CipherUtils {
      * @param iv Encryption IV
      * @return Encrypted files as bytes (filename + content)
      */
-    public static List<FileAsBytes> encrypt(List<FileAsBytes> originalFilesAsBytes, SecretKey key, IvParameterSpec iv) {
+    public static List<byte[]> encrypt(List<byte[]> originalFilesAsBytes, SecretKey key, IvParameterSpec iv) {
         return applyEncryption(Cipher.ENCRYPT_MODE, originalFilesAsBytes, key, iv);
     }
 
@@ -26,7 +26,7 @@ public class CipherUtils {
      * @param iv Encryption IV
      * @return Original files as bytes (filename + content)
      */
-    public static List<FileAsBytes> decrypt(List<FileAsBytes> encryptedFilesAsBytes, SecretKey key, IvParameterSpec iv) {
+    public static List<byte[]> decrypt(List<byte[]> encryptedFilesAsBytes, SecretKey key, IvParameterSpec iv) {
         return applyEncryption(Cipher.DECRYPT_MODE, encryptedFilesAsBytes, key, iv);
     }
 
@@ -37,7 +37,7 @@ public class CipherUtils {
      * @param iv Encryption IV
      * @return Encrypted files as bytes (filename + content)
      */
-    private static List<FileAsBytes> applyEncryption(int cipherMode, List<FileAsBytes> originalFilesAsBytes, SecretKey key, IvParameterSpec iv) {
+    private static List<byte[]> applyEncryption(int cipherMode, List<byte[]> originalFilesAsBytes, SecretKey key, IvParameterSpec iv) {
         Cipher cipher;
 
         try {
@@ -47,14 +47,13 @@ public class CipherUtils {
             // Initiate Cipher with given key and iv
             cipher.init(cipherMode, key, iv);
 
-            List<FileAsBytes> encryptedFilesAsBytes = new ArrayList<>();
+            List<byte[]> encryptedFilesAsBytes = new ArrayList<>();
 
             // Encrypt each bytes with cipher
-            for (FileAsBytes originalFileAsBytes : originalFilesAsBytes) {
-                byte[] filename = cipher.doFinal(originalFileAsBytes.filename);
-                byte[] content = cipher.doFinal(originalFileAsBytes.content);
+            for (byte[] originalFileAsBytes : originalFilesAsBytes) {
+                byte[] encryptedFileAsBytes = cipher.doFinal(originalFileAsBytes);
 
-                encryptedFilesAsBytes.add(new FileAsBytes(filename, content));
+                encryptedFilesAsBytes.add(encryptedFileAsBytes);
             }
 
             return encryptedFilesAsBytes;
