@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CipherUtils {
 
-    private static final String ENCRYPTION = "AES/CBC/PKCS5Padding";
+    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
     /**
      * @param originalFilesAsBytes Original files as bytes
@@ -42,7 +42,7 @@ public class CipherUtils {
 
         try {
             // Create a new Cipher instance with needed encryption
-            cipher = Cipher.getInstance(ENCRYPTION);
+            cipher = Cipher.getInstance(TRANSFORMATION);
 
             // Initiate Cipher with given key and iv
             cipher.init(cipherMode, key, iv);
@@ -58,7 +58,7 @@ public class CipherUtils {
 
             return encryptedFilesAsBytes;
         } catch (Exception e) {
-            throw new IllegalArgumentException(String.format("Encryption %s was not found", ENCRYPTION));
+            throw new IllegalArgumentException(String.format("Encryption %s was not found", TRANSFORMATION));
         }
     }
 }
