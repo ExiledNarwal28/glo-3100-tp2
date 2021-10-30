@@ -1,5 +1,8 @@
 package ca.ulaval.glo3100.keypass;
 
+import ca.ulaval.glo3100.utils.CipherUtils;
+import ca.ulaval.glo3100.utils.KeyUtils;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
@@ -15,14 +18,17 @@ public class KeyPassEntry {
         this.password = password;
     }
 
+    // TODO : Add javadoc
     public void encrypt(SecretKey key, IvParameterSpec iv) {
-        // TODO : Encrypt user
-        // TODO : Encrypt password
+        this.user = CipherUtils.encrypt(this.user, key, iv);
+        this.password = CipherUtils.encrypt(this.password, key, iv);
         this.iv = iv.toString();
     }
 
-    public void decrypt(String key, String iv) {
-        // TODO : Decrypt user
-        // TODO : Decrypt password
+    // TODO : Add javadoc
+    public void decrypt(SecretKey key) {
+        IvParameterSpec iv = KeyUtils.toIvParameterSpec(this.iv);
+        this.user = CipherUtils.decrypt(this.user, key, iv);
+        this.password = CipherUtils.decrypt(this.password, key, iv);
     }
 }
