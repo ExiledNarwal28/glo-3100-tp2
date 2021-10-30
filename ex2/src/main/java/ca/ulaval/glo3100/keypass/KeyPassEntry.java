@@ -26,19 +26,29 @@ public class KeyPassEntry {
 
     // TODO : Add javadoc
     public void encrypt(SecretKey key, IvParameterSpec iv) {
+        this.url = CipherUtils.encrypt(this.url, key, iv);
         this.user = CipherUtils.encrypt(this.user, key, iv);
         this.password = CipherUtils.encrypt(this.password, key, iv);
         this.iv = ByteUtils.toString(iv.getIV());
     }
 
     // TODO : Add javadoc
+    public void decryptUrl(SecretKey key) {
+        this.url = decrypt(key, this.url);
+    }
+
+    // TODO : Add javadoc
     public void decryptUser(SecretKey key) {
-        this.user = CipherUtils.decrypt(this.user, key, getIvParameterSpec());
+        this.user = decrypt(key, this.user);
     }
 
     // TODO : Add javadoc
     public void decryptPassword(SecretKey key) {
-        this.password = CipherUtils.decrypt(this.password, key, getIvParameterSpec());
+        this.password = decrypt(key, this.password);
+    }
+
+    private String decrypt(SecretKey key, String encryptedString) {
+        return CipherUtils.decrypt(encryptedString, key, getIvParameterSpec());
     }
 
     private IvParameterSpec getIvParameterSpec() {

@@ -13,6 +13,10 @@ public class KeyPassOperationAssembler {
     private static final String INDEX_ARG = "-i";
     private static final String DEBUG_ARG = "-debug";
 
+    /**
+     * @param args args sent to program
+     * @return newly assembled key pass operation
+     */
     public static KeyPassOperation assemble(String[] args) {
         // Default values
         String mainPassword = null;
@@ -91,6 +95,13 @@ public class KeyPassOperationAssembler {
         }
     }
 
+    /**
+     * @param mainPassword main password of key pass
+     * @param url url to add
+     * @param user user to add
+     * @param password password to add
+     * @return newly assembled add key pass operation
+     */
     private static KeyPassOperation assembleAddOperation(String mainPassword, String url, String user, String password) {
         if (url == null) {
             throw new IllegalArgumentException("Provide a url with -url");
@@ -107,10 +118,21 @@ public class KeyPassOperationAssembler {
         return new AddKeyPassOperation(mainPassword, url, user, password);
     }
 
+    /**
+     * @param mainPassword main password of key pass
+     * @return newly assembled list key pass operation
+     */
     private static KeyPassOperation assembleListOperation(String mainPassword) {
         return new ListKeyPassOperation(mainPassword);
     }
 
+    /**
+     * @param mainPassword main password of key pass
+     * @param index index of entry to decrypt
+     * @param decryptUser true if we want to decrypt user
+     * @param decryptPassword true if we want to decrypt password
+     * @return newly assembled decrypt key pass operation
+     */
     private static KeyPassOperation assembleDecryptOperation(String mainPassword, int index, boolean decryptUser, boolean decryptPassword) {
         if (index == 0) {
             throw new IllegalArgumentException("Provide an index with -i");

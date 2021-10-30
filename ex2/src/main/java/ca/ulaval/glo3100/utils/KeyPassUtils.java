@@ -27,6 +27,7 @@ public class KeyPassUtils {
      * @return Saved key pass
      */
     public static KeyPass getKeyPass(File keyPassFile) {
+        // Return new key pass if file doesn't exist
         if (!keyPassFile.exists()) {
             return new KeyPass(new HashMap<>());
         }

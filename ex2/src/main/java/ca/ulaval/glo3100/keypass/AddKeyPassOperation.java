@@ -18,14 +18,18 @@ public class AddKeyPassOperation extends BaseKeyPassOperation {
 
     @Override
     public void execute() {
+        // Instantiate entry
         KeyPassEntry entry = new KeyPassEntry(url, user, password);
 
+        // Generate iv and encrypt entry
         IvParameterSpec iv = KeyUtils.generateIv();
         entry.encrypt(getMainKey(), iv);
 
+        // Get key pass and add entry
         KeyPass keyPass = getKeyPass();
         keyPass.add(entry);
 
+        // Save key pass with new entry
         saveKeyPass(keyPass);
     }
 }

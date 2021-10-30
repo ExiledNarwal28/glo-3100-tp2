@@ -18,29 +18,39 @@ public abstract class BaseKeyPassOperation implements KeyPassOperation {
         this.mainPassword = mainPassword;
     }
 
-    // TODO : Add javadoc
+    /**
+     * @return Key pass saved in file
+     */
     protected KeyPass getKeyPass() {
         File keyPassFile = FileUtils.getOrCreateFile(KEY_PASS_FILENAME);
         return KeyPassUtils.getKeyPass(keyPassFile);
     }
 
-    // TODO : Add javadoc
+    /**
+     * @param keyPass key pass to save in file
+     */
     protected void saveKeyPass(KeyPass keyPass) {
         File keyPassFile = FileUtils.getOrCreateFile(KEY_PASS_FILENAME);
         KeyPassUtils.saveKeyPass(keyPassFile, keyPass);
     }
 
-    // TODO : Add javadoc
+    /**
+     * @return main password converted to a secret key
+     */
     protected SecretKey getMainKey() {
         return KeyUtils.toSecretKey(mainPassword);
     }
 
-    // TODO : Add javadoc
+    /**
+     * Write basic column names
+     */
     protected void writeColumnNames() {
         writeRow("ligne", "url", "user", "password");
     }
 
-    // TODO : Add javadoc
+    /**
+     * Write basic row (4 columns)
+     */
     protected void writeRow(String line, String url, String user, String password) {
         Logger.logInfo(String.format("%-10s %-10s %-10s %-10s", line, url, user, password));
     }

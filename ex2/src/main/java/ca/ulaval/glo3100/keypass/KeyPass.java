@@ -14,12 +14,18 @@ public class KeyPass {
         this.entries = entries;
     }
 
-    // TODO : Add javadoc
+    /**
+     * @param entry entry to add to key pass
+     */
     public void add(KeyPassEntry entry) {
         int index = entries.size() + 1;
         entries.put(index, entry);
     }
 
+    /**
+     * @param index index of entry to get
+     * @return entry at given index
+     */
     public KeyPassEntry get(int index) {
         return entries.get(index);
     }

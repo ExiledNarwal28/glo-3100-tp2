@@ -3,8 +3,6 @@ package ca.ulaval.glo3100.utils;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CipherUtils {
 

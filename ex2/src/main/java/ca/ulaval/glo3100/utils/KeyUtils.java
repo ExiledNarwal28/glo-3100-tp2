@@ -15,7 +15,10 @@ public class KeyUtils {
     private static final int IV_SIZE = 16;
 
     // TODO : Cleanup
-    // TODO : Add javadoc
+    /**
+     * @param password password as string
+     * @return secret key built from password
+     */
     public static SecretKey toSecretKey(String password) {
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
@@ -28,10 +31,12 @@ public class KeyUtils {
     }
 
     // TODO : IV seems wrong, decryption does not work
-    // TODO : Add javadoc
-    public static IvParameterSpec toIvParameterSpec(String ivAsString) {
-        byte[] iv = ByteUtils.toBytes(ivAsString);
-        return new IvParameterSpec(iv);
+    /**
+     * @param iv iv as string
+     * @return iv parameter spec built from iv as string
+     */
+    public static IvParameterSpec toIvParameterSpec(String iv) {
+        return new IvParameterSpec(ByteUtils.toBytes(iv));
     }
 
     /**
