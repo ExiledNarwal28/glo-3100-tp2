@@ -1,5 +1,6 @@
 package ca.ulaval.glo3100.keypass;
 
+import ca.ulaval.glo3100.utils.ByteUtils;
 import ca.ulaval.glo3100.utils.CipherUtils;
 import ca.ulaval.glo3100.utils.KeyUtils;
 
@@ -10,7 +11,12 @@ public class KeyPassEntry {
     public String url;
     public String user;
     public String password;
-    private String iv;
+    public String iv;
+
+    // Used to read from JSON
+    public KeyPassEntry() {
+
+    }
 
     public KeyPassEntry(String url, String user, String password) {
         this.url = url;
@@ -22,7 +28,7 @@ public class KeyPassEntry {
     public void encrypt(SecretKey key, IvParameterSpec iv) {
         this.user = CipherUtils.encrypt(this.user, key, iv);
         this.password = CipherUtils.encrypt(this.password, key, iv);
-        this.iv = iv.toString();
+        this.iv = ByteUtils.toString(iv.getIV());
     }
 
     // TODO : Add javadoc

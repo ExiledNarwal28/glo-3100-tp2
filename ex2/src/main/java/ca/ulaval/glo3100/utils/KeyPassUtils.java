@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class KeyPassUtils {
 
@@ -26,6 +27,10 @@ public class KeyPassUtils {
      * @return Saved key pass
      */
     public static KeyPass getKeyPass(File keyPassFile) {
+        if (!keyPassFile.exists()) {
+            return new KeyPass(new HashMap<>());
+        }
+
         try {
             // Read encryption params from JSON
             return new ObjectMapper().readValue(keyPassFile, KeyPass.class);
