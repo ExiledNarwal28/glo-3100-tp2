@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CipherUtils {
 
-    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
+    private static final String TRANSFORMATION = "AES/CTR/NoPadding";
 
     /**
      * @param originalFilesAsBytes Original files as bytes
