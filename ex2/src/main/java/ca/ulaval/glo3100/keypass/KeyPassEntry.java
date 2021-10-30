@@ -7,9 +7,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 public class KeyPassEntry {
-    private String url;
-    private String user;
-    private String password;
+    public String url;
+    public String user;
+    public String password;
     private String iv;
 
     public KeyPassEntry(String url, String user, String password) {

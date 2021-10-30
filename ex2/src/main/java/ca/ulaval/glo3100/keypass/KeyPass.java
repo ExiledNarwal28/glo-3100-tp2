@@ -3,7 +3,7 @@ package ca.ulaval.glo3100.keypass;
 import java.util.Map;
 
 public class KeyPass {
-    private Map<Integer, KeyPassEntry> entries;
+    public Map<Integer, KeyPassEntry> entries;
 
     public KeyPass(Map<Integer, KeyPassEntry> entries) {
         this.entries = entries;

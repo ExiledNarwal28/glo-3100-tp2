@@ -5,8 +5,13 @@ public class ListKeyPassOperation extends BaseKeyPassOperation {
         super(mainPassword);
     }
 
+    // TODO : Now, why don't we need the main password here?
     @Override
     public void execute() {
-        // TODO : Execute list operation
+        KeyPass keyPass = getKeyPass();
+
+        writeColumnNames();
+
+        keyPass.entries.forEach((integer, keyPassEntry) -> writeRow(integer.toString(), keyPassEntry.url, ENCRYPTED_STRING, ENCRYPTED_STRING));
     }
 }
