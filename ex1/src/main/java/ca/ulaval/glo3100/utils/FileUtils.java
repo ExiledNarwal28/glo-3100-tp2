@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class FileUtils {
 
@@ -112,26 +113,41 @@ public class FileUtils {
 
     /**
      * @param directory Directory to get or create file
-     * @param filePaths Filename of file
+     * @param filePath Path of file
      * @return existing or newly created file
      */
-    public static File getOrCreateFile(File directory, String filePaths) {
-        if (directory.isDirectory()) {
-            File file = new File(directory, filePaths);
-
-            if (!file.exists()) {
-                try {
-                    // TODO : Create each dir
-                    Files.createFile(Paths.get(file.getAbsolutePath()));
-                } catch (Exception e) {
-                    throw new IllegalArgumentException("Could not create directory or file");
-                }
+    public static File getOrCreateFile(File directory, String filePath) {
+        // Create directory if it does not exist
+        if (!directory.exists()) {
+            try {
+                Files.createDirectories(Paths.get(directory.getAbsolutePath()));
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Could not create directory");
             }
-
-            return file;
-        } else {
-            throw new IllegalArgumentException("Provided directory is not a directory");
         }
+
+        // Get each directory and file in path
+        Path path = Paths.get(filePath);
+        List<String> files = StreamSupport.stream(path.spliterator(), false).map(Path::toString).collect(Collectors.toList());
+
+        // If there are subdirectories, create recursively
+        if (files.size() > 1) {
+            File subdirectory = new File(directory, files.get(0));
+            return getOrCreateFile(subdirectory, files.get(1));
+        }
+
+        File file = new File(directory, filePath);
+
+        // Create file if it does not exist
+        if (!file.exists()) {
+            try {
+                Files.createFile(Paths.get(file.getAbsolutePath()));
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Could not create file");
+            }
+        }
+
+        return file;
     }
 
     /**
