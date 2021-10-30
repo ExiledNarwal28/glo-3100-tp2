@@ -6,12 +6,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,22 +44,48 @@ public class FileUtils {
     public static List<File> getFiles(File directory, List<FileType> fileTypes) {
         List<File> files = new ArrayList<>();
 
-        // Get each files matching given file types
-        File[] filesArray = directory.listFiles((dir, name) -> {
-            for (FileType fileType : fileTypes) {
-                if (name.endsWith(String.format(".%s", fileType))) {
-                    return true;
-                }
+        File[] filesInDirectory = directory.listFiles();
+
+        // If no files, return empty list
+        if (filesInDirectory == null) {
+            return files;
+        }
+
+        for (File file : filesInDirectory) {
+            if (file.isDirectory()) {
+                // Add files recursively in directory
+                files.addAll(getFiles(file, fileTypes));
             }
 
-            return false;
-        });
-
-        if (filesArray != null) {
-            files.addAll(Arrays.asList(filesArray));
+            // Add file if it matches given filetypes
+            for (FileType fileType : fileTypes) {
+                if (file.getName().endsWith(String.format(".%s", fileType))) {
+                    files.add(file);
+                    break;
+                }
+            }
         }
 
         return files;
+    }
+
+    /**
+     * @param directory Directory to build relative paths from
+     * @param files List of files to build relative paths from
+     * @return List of relative paths from directory to each files
+     */
+    public static List<String> getRelativePaths(File directory, List<File> files) {
+        List<String> relativePaths = new ArrayList<>();
+
+        Path directoryPath = Paths.get(directory.getAbsolutePath());
+
+        for (File file : files) {
+            Path filePath = Paths.get(file.getAbsolutePath());
+            Path relativePath = directoryPath.relativize(filePath);
+            relativePaths.add(relativePath.toString());
+        }
+
+        return relativePaths;
     }
 
     /**
@@ -87,26 +112,53 @@ public class FileUtils {
 
     /**
      * @param directory Directory to get or create file
-     * @param filename Filename of file
+     * @param filePaths Filename of file
      * @return existing or newly created file
      */
-    public static File getOrCreateFile(File directory, String filename) {
+    public static File getOrCreateFile(File directory, String filePaths) {
         if (directory.isDirectory()) {
-            return new File(directory, filename);
+            File file = new File(directory, filePaths);
+
+            if (!file.exists()) {
+                try {
+                    // TODO : Create each dir
+                    Files.createFile(Paths.get(file.getAbsolutePath()));
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Could not create directory or file");
+                }
+            }
+
+            return file;
         } else {
             throw new IllegalArgumentException("Provided directory is not a directory");
         }
     }
 
     /**
+     * @param topDirectory Top directory, which should not be deleted
      * @param files Files to delete
      */
-    public static void deleteFiles(List<File> files) {
+    public static void deleteFiles(File topDirectory, List<File> files) {
         for (File file : files) {
-            boolean result = file.delete();
+            deleteFile(topDirectory, file);
+        }
+    }
 
-            if (!result) {
-                throw new IllegalArgumentException(String.format("Could not delete file %s", file.getPath()));
+    /**
+     * @param topDirectory Top directory, which should not be deleted
+     * @param file File to delete
+     */
+    public static void deleteFile(File topDirectory, File file) {
+        File directory = file.getParentFile();
+        boolean result = file.delete();
+
+        if (!result) {
+            throw new IllegalArgumentException(String.format("Could not delete file %s", file.getPath()));
+        } else {
+            File[] subFiles = directory.listFiles();
+
+            if (topDirectory != directory && directory.isDirectory() && subFiles != null && subFiles.length == 0) {
+                deleteFile(topDirectory, directory);
             }
         }
     }
@@ -135,7 +187,7 @@ public class FileUtils {
             }
 
             // Add newline unless it's the last string
-            if (i > fileAsStrings.size() - 1) {
+            if (i < fileAsStrings.size() - 1) {
                 try {
                     fileWriter.write("\n");
                 } catch (IOException e) {
@@ -155,13 +207,13 @@ public class FileUtils {
      * @param directory Directory to save files in
      * @param filesAsBytes Files as bytes to save
      */
-    public static void saveFilesAsBytes(File directory, List<String> filenames, List<byte[]> filesAsBytes) {
-        if (filenames.size() != filesAsBytes.size()) {
+    public static void saveFilesAsBytes(File directory, List<String> filePaths, List<byte[]> filesAsBytes) {
+        if (filePaths.size() != filesAsBytes.size()) {
             throw new IllegalArgumentException("Size of given filenames and files as bytes do not match");
         }
 
         for (int i = 0; i < filesAsBytes.size(); i++) {
-            File file = getOrCreateFile(directory, filenames.get(i));
+            File file = getOrCreateFile(directory, filePaths.get(i));
 
             try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
                 // Write bytes to file

