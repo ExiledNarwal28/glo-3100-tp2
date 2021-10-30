@@ -26,7 +26,8 @@ public class KeyPassEntry {
 
     // TODO : Add javadoc
     public void encrypt(SecretKey key, IvParameterSpec iv) {
-        this.url = CipherUtils.encrypt(this.url, key, iv);
+        // TODO : Should url be encrypted?
+        // this.url = CipherUtils.encrypt(this.url, key, iv);
         this.user = CipherUtils.encrypt(this.user, key, iv);
         this.password = CipherUtils.encrypt(this.password, key, iv);
         this.iv = ByteUtils.toString(iv.getIV());
@@ -34,7 +35,8 @@ public class KeyPassEntry {
 
     // TODO : Add javadoc
     public void decryptUrl(SecretKey key) {
-        this.url = decrypt(key, this.url);
+        // TODO : Should url be encrypted?
+        // this.url = decrypt(key, this.url);
     }
 
     // TODO : Add javadoc

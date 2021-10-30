@@ -1,12 +1,8 @@
 package ca.ulaval.glo3100.utils;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class ByteUtils {
-
-    private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     /**
      * @param bytes Bytes to convert
@@ -21,6 +17,6 @@ public class ByteUtils {
      * @return String converted to bytes
      */
     public static byte[] toBytes(String string) {
-        return string.getBytes(CHARSET);
+        return Base64.getDecoder().decode(string);
     }
 }
