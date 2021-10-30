@@ -1,5 +1,8 @@
 package ca.ulaval.glo3100.keypass;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+
 public class KeyPassEntry {
     private String url;
     private String user;
@@ -12,10 +15,10 @@ public class KeyPassEntry {
         this.password = password;
     }
 
-    public void encrypt(String key, String iv) {
+    public void encrypt(SecretKey key, IvParameterSpec iv) {
         // TODO : Encrypt user
         // TODO : Encrypt password
-        this.iv = iv;
+        this.iv = iv.toString();
     }
 
     public void decrypt(String key, String iv) {

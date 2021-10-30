@@ -1,9 +1,13 @@
 package ca.ulaval.glo3100.keypass;
 
+import ca.ulaval.glo3100.utils.KeyUtils;
+
+import javax.crypto.spec.IvParameterSpec;
+
 public class AddKeyPassOperation extends BaseKeyPassOperation {
-    private String url;
-    private String user;
-    private String password;
+    private final String url;
+    private final String user;
+    private final String password;
 
     public AddKeyPassOperation(String mainPassword, String url, String user, String password) {
         super(mainPassword);
@@ -15,10 +19,10 @@ public class AddKeyPassOperation extends BaseKeyPassOperation {
     @Override
     public void execute() {
         KeyPassEntry entry = new KeyPassEntry(url, user, password);
-        // TODO : Generate iv
-        String iv = "";
 
-        entry.encrypt(mainPassword, iv);
+        IvParameterSpec iv = KeyUtils.generateIv();
+        entry.encrypt(getMainKey(), iv);
+
         KeyPass keyPass = getKeyPass();
         keyPass.add(entry);
 
