@@ -52,7 +52,7 @@ public class CipherUtils {
 
             return ByteUtils.toString(encryptedBytes);
         } catch (Exception e) {
-            throw new IllegalArgumentException(String.format("Encryption %s was not found", TRANSFORMATION));
+            throw new IllegalArgumentException(String.format("Encryption transformation %s was not found", TRANSFORMATION));
         }
     }
 }

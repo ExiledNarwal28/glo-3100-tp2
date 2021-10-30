@@ -3,8 +3,9 @@ package ca.ulaval.glo3100.utils;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.util.Base64;
 
 public class KeyUtils {
 
@@ -13,14 +14,14 @@ public class KeyUtils {
 
     // TODO : Add javadoc
     public static SecretKey toSecretKey(String keyAsString) {
-        byte[] key = Base64.getDecoder().decode(keyAsString);
-        return new SecretKeySpec(key, 0, key.length, ENCRYPTION);
+        byte[] key = ByteUtils.toBytes(keyAsString);
+        return new SecretKeySpec(key, ENCRYPTION);
     }
 
     // TODO : Remove if not needed
     // TODO : Add javadoc
     public static IvParameterSpec toIvParameterSpec(String ivAsString) {
-        byte[] iv = Base64.getDecoder().decode(ivAsString);
+        byte[] iv = ByteUtils.toBytes(ivAsString);
         return new IvParameterSpec(iv);
     }
 
