@@ -14,4 +14,8 @@ public class KeyPass {
         int index = entries.size() + 1;
         entries.put(index, entry);
     }
+
+    public KeyPassEntry get(int index) {
+        return entries.get(index);
+    }
 }
