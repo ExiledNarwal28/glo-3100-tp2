@@ -27,6 +27,12 @@ public class KeyPass {
      * @return entry at given index
      */
     public KeyPassEntry get(int index) {
-        return entries.get(index);
+        KeyPassEntry entry = entries.get(index);
+
+        if (entry == null) {
+            throw new IllegalArgumentException("Index is not found in key pass.");
+        }
+
+        return entry;
     }
 }

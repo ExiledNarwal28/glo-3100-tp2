@@ -18,7 +18,6 @@ public class DecryptKeyPassOperation extends BaseKeyPassOperation {
     public void execute() {
         // Get key pass entry in key pass
         KeyPass keyPass = getKeyPass();
-        // TODO : If index does not exist?
         KeyPassEntry entry = keyPass.get(index);
 
         // Get main password as secret key
