@@ -3,13 +3,10 @@ package ca.ulaval.glo3100.utils;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import java.util.Base64;
 
 public class CipherUtils {
 
     private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
-
-    // TODO : Use ByteUtils for the following
 
     /**
      * @param originalString original string
@@ -20,7 +17,7 @@ public class CipherUtils {
     public static String encryptString(String originalString, SecretKey key, IvParameterSpec iv) {
         byte[] originalBytes = originalString.getBytes();
         byte[] encryptedBytes = CipherUtils.encrypt(originalBytes, key, iv);
-        return Base64.getEncoder().encodeToString(encryptedBytes);
+        return ByteUtils.toString(encryptedBytes);
     }
 
     /**
@@ -32,7 +29,7 @@ public class CipherUtils {
     public static String encryptUrlString(String originalString, SecretKey key, IvParameterSpec iv) {
         byte[] originalBytes = originalString.getBytes();
         byte[] encryptedBytes = CipherUtils.encrypt(originalBytes, key, iv);
-        return Base64.getUrlEncoder().encodeToString(encryptedBytes);
+        return ByteUtils.toUrlString(encryptedBytes);
     }
 
     /**
@@ -42,7 +39,7 @@ public class CipherUtils {
      * @return encrypted string
      */
     public static String decryptString(String encryptedString, SecretKey key, IvParameterSpec iv) {
-        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedString);
+        byte[] encryptedBytes = ByteUtils.toBytes(encryptedString);
         byte[] originalBytes = CipherUtils.decrypt(encryptedBytes, key, iv);
         return new String(originalBytes);
     }
@@ -54,7 +51,7 @@ public class CipherUtils {
      * @return original URL
      */
     public static String decryptUrlString(String encryptedString, SecretKey key, IvParameterSpec iv) {
-        byte[] encryptedBytes = Base64.getUrlDecoder().decode(encryptedString);
+        byte[] encryptedBytes = ByteUtils.toUrlBytes(encryptedString);
         byte[] originalBytes = CipherUtils.decrypt(encryptedBytes, key, iv);
         return new String(originalBytes);
     }
@@ -65,7 +62,7 @@ public class CipherUtils {
      * @param iv Encryption IV
      * @return Encrypted bytes
      */
-    public static byte[] encrypt(byte[] originalBytes, SecretKey key, IvParameterSpec iv) {
+    private static byte[] encrypt(byte[] originalBytes, SecretKey key, IvParameterSpec iv) {
         return applyEncryption(Cipher.ENCRYPT_MODE, originalBytes, key, iv);
     }
 
@@ -75,7 +72,7 @@ public class CipherUtils {
      * @param iv Encryption IV
      * @return Original bytes
      */
-    public static byte[] decrypt(byte[] encryptedBytes, SecretKey key, IvParameterSpec iv) {
+    private static byte[] decrypt(byte[] encryptedBytes, SecretKey key, IvParameterSpec iv) {
         return applyEncryption(Cipher.DECRYPT_MODE, encryptedBytes, key, iv);
     }
 
