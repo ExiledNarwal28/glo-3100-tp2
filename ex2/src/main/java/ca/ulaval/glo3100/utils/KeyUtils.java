@@ -32,7 +32,6 @@ public class KeyUtils {
         }
     }
 
-    // TODO : IV seems wrong, decryption does not work
     /**
      * @param iv iv as string
      * @return iv parameter spec built from iv as string
