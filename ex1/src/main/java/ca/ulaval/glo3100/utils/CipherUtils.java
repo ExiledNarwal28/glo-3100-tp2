@@ -3,41 +3,39 @@ package ca.ulaval.glo3100.utils;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CipherUtils {
 
     private static final String TRANSFORMATION = "AES/CTR/NoPadding";
 
     /**
-     * @param originalFilesAsBytes Original files as bytes
+     * @param originalBytes Original bytes
      * @param key Encryption key
      * @param iv Encryption IV
-     * @return Encrypted files as bytes (filename + content)
+     * @return Encrypted bytes
      */
-    public static List<byte[]> encrypt(List<byte[]> originalFilesAsBytes, SecretKey key, IvParameterSpec iv) {
-        return applyEncryption(Cipher.ENCRYPT_MODE, originalFilesAsBytes, key, iv);
+    public static byte[] encrypt(byte[] originalBytes, SecretKey key, IvParameterSpec iv) {
+        return applyEncryption(Cipher.ENCRYPT_MODE, originalBytes, key, iv);
     }
 
     /**
-     * @param encryptedFilesAsBytes Encrypted files as bytes
+     * @param encryptedBytes Encrypted bytes
      * @param key Encryption key
      * @param iv Encryption IV
-     * @return Original files as bytes (filename + content)
+     * @return Original bytes
      */
-    public static List<byte[]> decrypt(List<byte[]> encryptedFilesAsBytes, SecretKey key, IvParameterSpec iv) {
-        return applyEncryption(Cipher.DECRYPT_MODE, encryptedFilesAsBytes, key, iv);
+    public static byte[] decrypt(byte[] encryptedBytes, SecretKey key, IvParameterSpec iv) {
+        return applyEncryption(Cipher.DECRYPT_MODE, encryptedBytes, key, iv);
     }
 
     /**
      * @param cipherMode Cipher mode (encrypt or decrypt)
-     * @param originalFilesAsBytes Original files as bytes
+     * @param originalBytes Original bytes
      * @param key Encryption key
      * @param iv Encryption IV
-     * @return Encrypted files as bytes (filename + content)
+     * @return Encrypted bytes
      */
-    private static List<byte[]> applyEncryption(int cipherMode, List<byte[]> originalFilesAsBytes, SecretKey key, IvParameterSpec iv) {
+    private static byte[] applyEncryption(int cipherMode, byte[] originalBytes, SecretKey key, IvParameterSpec iv) {
         Cipher cipher;
 
         try {
@@ -47,16 +45,8 @@ public class CipherUtils {
             // Initiate Cipher with given key and iv
             cipher.init(cipherMode, key, iv);
 
-            List<byte[]> encryptedFilesAsBytes = new ArrayList<>();
-
-            // Encrypt each bytes with cipher
-            for (byte[] originalFileAsBytes : originalFilesAsBytes) {
-                byte[] encryptedFileAsBytes = cipher.doFinal(originalFileAsBytes);
-
-                encryptedFilesAsBytes.add(encryptedFileAsBytes);
-            }
-
-            return encryptedFilesAsBytes;
+            // Encrypt bytes
+            return cipher.doFinal(originalBytes);
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Encryption %s was not found", TRANSFORMATION));
         }

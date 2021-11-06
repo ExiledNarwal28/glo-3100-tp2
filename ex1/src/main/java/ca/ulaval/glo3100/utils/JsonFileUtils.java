@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
-public class JsonUtils {
+public class JsonFileUtils {
 
     /**
      * @param directory Directory to write file in
@@ -17,12 +17,11 @@ public class JsonUtils {
      * @param key Key to save
      * @param iv IV to save
      */
-    public static void saveEncryptionParams(File directory, String filename, SecretKey key, IvParameterSpec iv, List<String> filenames) {
+    public static void saveEncryptionParams(File directory, String filename, SecretKey key, IvParameterSpec iv) {
         // Created encryption params
         EncryptionParams encryptionParams = new EncryptionParams(
                 Base64.getEncoder().encodeToString(key.getEncoded()),
-                Base64.getEncoder().encodeToString(iv.getIV()),
-                filenames
+                Base64.getEncoder().encodeToString(iv.getIV())
         );
 
         // Create file to save params

