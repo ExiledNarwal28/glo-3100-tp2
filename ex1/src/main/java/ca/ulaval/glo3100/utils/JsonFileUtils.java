@@ -7,7 +7,6 @@ import javax.crypto.spec.IvParameterSpec;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.List;
 
 public class JsonFileUtils {
 
@@ -27,8 +26,8 @@ public class JsonFileUtils {
         // Create file to save params
         File file = FileUtils.getOrCreateFile(directory, filename);
 
-        // Write encryption params as JSON
         try {
+            // Write encryption params as JSON
             new ObjectMapper().writeValue(file, encryptionParams);
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not save encryption params");
@@ -44,8 +43,8 @@ public class JsonFileUtils {
         // Get file for params
         File file = FileUtils.getOrCreateFile(directory, filename);
 
-        // Read encryption params from JSON
         try {
+            // Read encryption params from JSON
             return new ObjectMapper().readValue(file, EncryptionParams.class);
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not read encryption params");

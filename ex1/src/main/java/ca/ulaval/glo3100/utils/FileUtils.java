@@ -130,12 +130,18 @@ public class FileUtils {
         return file;
     }
 
-    // TODO : Add javadocs
+    /**
+     * @param originalFile Original file to generate encrypted file from
+     * @return Encrypted file for original file (original file path + ".enc")
+     */
     public static File toEncryptedFile(File originalFile) {
         return new File(String.format("%s%s", originalFile.getPath(), ENCRYPTION_EXTENSION));
     }
 
-    // TODO : Add javadocs
+    /**
+     * @param encryptedFile Encrypted file to generate original file from
+     * @return Original file for encrypted file (encrypted file path - ".enc")
+     */
     public static File toOriginalFile(File encryptedFile) {
         return new File(encryptedFile.getAbsolutePath().substring(0, encryptedFile.getAbsolutePath().length() - ENCRYPTION_EXTENSION.length()));
     }

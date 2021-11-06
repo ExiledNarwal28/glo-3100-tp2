@@ -28,8 +28,10 @@ public class TextFileUtils {
             throw new IllegalArgumentException("FileWrite could not be instantiated with given directory and filename");
         }
 
+        // For each file type
         for (int i = 0; i < fileTypes.size(); i++) {
             try {
+                // Write file type in given file
                 fileWriter.write(fileTypes.get(i).toString());
             } catch (IOException e) {
                 throw new IllegalArgumentException("Could not write to file");
