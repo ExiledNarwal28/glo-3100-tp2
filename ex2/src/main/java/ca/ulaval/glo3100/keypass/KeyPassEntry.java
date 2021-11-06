@@ -6,6 +6,8 @@ import ca.ulaval.glo3100.utils.KeyUtils;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class KeyPassEntry {
     public String url;
@@ -25,13 +27,13 @@ public class KeyPassEntry {
     }
 
     /**
-     * @param key Key used to decrypt values
-     * @param iv IV used to decrypt values
+     * @param key Key used to encrypt values
+     * @param iv IV used to encrypt values
      */
     public void encrypt(SecretKey key, IvParameterSpec iv) {
-        this.url = CipherUtils.encrypt(this.url, key, iv);
-        this.user = CipherUtils.encrypt(this.user, key, iv);
-        this.password = CipherUtils.encrypt(this.password, key, iv);
+        this.url = CipherUtils.encryptUrlString(this.url, key, iv);
+        this.user = CipherUtils.encryptString(this.user, key, iv);
+        this.password = CipherUtils.encryptString(this.password, key, iv);
         this.iv = ByteUtils.toString(iv.getIV());
     }
 
@@ -39,25 +41,21 @@ public class KeyPassEntry {
      * @param key Key used to decrypt URL
      */
     public void decryptUrl(SecretKey key) {
-        this.url = decrypt(key, this.url);
+        this.url = CipherUtils.decryptUrlString(this.url, key, getIvParameterSpec());
     }
 
     /**
      * @param key Key used to decrypt user
      */
     public void decryptUser(SecretKey key) {
-        this.user = decrypt(key, this.user);
+        this.user = CipherUtils.decryptString(this.user, key, getIvParameterSpec());
     }
 
     /**
      * @param key Key used to decrypt password
      */
     public void decryptPassword(SecretKey key) {
-        this.password = decrypt(key, this.password);
-    }
-
-    private String decrypt(SecretKey key, String encryptedString) {
-        return CipherUtils.decrypt(encryptedString, key, getIvParameterSpec());
+        this.password = CipherUtils.decryptString(this.password, key, getIvParameterSpec());
     }
 
     private IvParameterSpec getIvParameterSpec() {
