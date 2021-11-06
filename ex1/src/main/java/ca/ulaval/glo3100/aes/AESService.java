@@ -68,7 +68,8 @@ public class AESService {
             CipherUtils.encrypt(file, key, iv);
         }
 
-        // TODO : Delete original files
+        // Delete original files
+        FileUtils.deleteFiles(filesToEncrypt);
 
         // Get subdirectory in directory
         List<File> subdirectories = FileUtils.getSubdirectories(directory);
@@ -118,7 +119,8 @@ public class AESService {
             CipherUtils.decrypt(file, key, iv);
         }
 
-        // TODO : Delete encrypted files
+        // Delete encrypted files
+        FileUtils.deleteFiles(filesToDecrypt);
 
         // Get subdirectory in directory
         List<File> subdirectories = FileUtils.getSubdirectories(directory);

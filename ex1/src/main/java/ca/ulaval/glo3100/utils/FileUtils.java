@@ -3,7 +3,6 @@ package ca.ulaval.glo3100.utils;
 import ca.ulaval.glo3100.args.FileType;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class FileUtils {
+
+    private static final String ENCRYPTION_EXTENSION = ".enc";
 
     /**
      * @param stringDirectory directory as string
@@ -38,6 +39,7 @@ public class FileUtils {
     /**
      * @param directory Directory to look for files
      * @param fileTypes Accepted file types
+     * @param encrypted True if we want encrypted files (with .enc extension)
      * @return List of files in directory that match given files types
      */
     public static List<File> getFiles(File directory, List<FileType> fileTypes, boolean encrypted) {
@@ -53,7 +55,7 @@ public class FileUtils {
         for (File file : filesInDirectory) {
             // Add file if it matches given filetypes
             for (FileType fileType : fileTypes) {
-                String extension = encrypted ? String.format(".%s.enc", fileType) : String.format(".%s", fileType);
+                String extension = encrypted ? String.format(".%s%s", fileType, ENCRYPTION_EXTENSION) : String.format(".%s", fileType);
 
                 if (file.getName().endsWith(extension)) {
                     files.add(file);
@@ -87,18 +89,6 @@ public class FileUtils {
         }
 
         return subdirectories;
-    }
-
-    /**
-     * @param file File to convert to bytes
-     * @return Bytes for file
-     */
-    public static byte[] toBytes(File file) {
-        try {
-            return Files.readAllBytes(file.toPath());
-        } catch (IOException e) {
-            throw new IllegalArgumentException(String.format("File %s could not be converted to bytes.", file.getPath()));
-        }
     }
 
     /**
@@ -140,18 +130,14 @@ public class FileUtils {
         return file;
     }
 
-    /**
-     * @param file Files to overwrite
-     * @param content Content to overwrite in file
-     */
-    public static void overwriteFile(File file, byte[] content) {
-        // "false" means we overwrite the file
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file, false)) {
-            // Write bytes to file
-            fileOutputStream.write(content);
-        } catch (IOException ioe) {
-            throw new IllegalArgumentException("Could not overwrite to file");
-        }
+    // TODO : Add javadocs
+    public static File toEncryptedFile(File originalFile) {
+        return new File(String.format("%s%s", originalFile.getPath(), ENCRYPTION_EXTENSION));
+    }
+
+    // TODO : Add javadocs
+    public static File toOriginalFile(File encryptedFile) {
+        return new File(encryptedFile.getAbsolutePath().substring(0, encryptedFile.getAbsolutePath().length() - ENCRYPTION_EXTENSION.length()));
     }
 
     /**
@@ -161,6 +147,13 @@ public class FileUtils {
     public static void deleteFile(File directory, String filename) {
         File file = getOrCreateFile(directory, filename);
         deleteFile(file);
+    }
+
+    /**
+     * @param files Files to delete
+     */
+    public static void deleteFiles(List<File> files) {
+        files.forEach(FileUtils::deleteFile);
     }
 
     /**
