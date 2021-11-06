@@ -29,8 +29,7 @@ public class CipherUtils {
      * @return encrypted URL
      */
     public static String encryptUrlString(String originalString, SecretKey key, IvParameterSpec iv) {
-        String base64String = Base64.getUrlEncoder().encodeToString(originalString.getBytes(StandardCharsets.UTF_8));
-        byte[] originalBytes = base64String.getBytes();
+        byte[] originalBytes = originalString.getBytes(StandardCharsets.UTF_8);
         byte[] encryptedBytes = CipherUtils.encrypt(originalBytes, key, iv);
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
@@ -42,7 +41,7 @@ public class CipherUtils {
      * @return encrypted string
      */
     public static String decryptString(String encryptedString, SecretKey key, IvParameterSpec iv) {
-        byte[] encryptedBytes = encryptedString.getBytes();
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedString);
         byte[] originalBytes = CipherUtils.encrypt(encryptedBytes, key, iv);
         return new String(originalBytes);
     }
@@ -54,7 +53,7 @@ public class CipherUtils {
      * @return original URL
      */
     public static String decryptUrlString(String encryptedString, SecretKey key, IvParameterSpec iv) {
-        byte[] encryptedBytes = encryptedString.getBytes();
+        byte[] encryptedBytes = Base64.getUrlDecoder().decode(encryptedString);
         byte[] originalBytes = CipherUtils.decrypt(encryptedBytes, key, iv);
         return new String(originalBytes);
     }

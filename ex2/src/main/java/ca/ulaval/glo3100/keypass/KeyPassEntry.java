@@ -31,7 +31,8 @@ public class KeyPassEntry {
      * @param iv IV used to encrypt values
      */
     public void encrypt(SecretKey key, IvParameterSpec iv) {
-        this.url = CipherUtils.encryptUrlString(this.url, key, iv);
+        // TODO : Encrypt URL
+        // this.url = CipherUtils.encryptUrlString(this.url, key, iv);
         this.user = CipherUtils.encryptString(this.user, key, iv);
         this.password = CipherUtils.encryptString(this.password, key, iv);
         this.iv = ByteUtils.toString(iv.getIV());
@@ -41,7 +42,8 @@ public class KeyPassEntry {
      * @param key Key used to decrypt URL
      */
     public void decryptUrl(SecretKey key) {
-        this.url = CipherUtils.decryptUrlString(this.url, key, getIvParameterSpec());
+        // TODO : Decrypt URL
+        // this.url = CipherUtils.decryptUrlString(this.url, key, getIvParameterSpec());
     }
 
     /**
