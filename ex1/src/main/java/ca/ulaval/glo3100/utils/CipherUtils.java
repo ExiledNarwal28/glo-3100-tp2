@@ -8,6 +8,7 @@ import java.io.*;
 public class CipherUtils {
 
     private static final String TRANSFORMATION = "AES/CTR/NoPadding";
+    private static final int INPUT_BUFFER_SIZE = 1024;
 
     /**
      * @param originalFile Original file to encrypt
@@ -19,17 +20,17 @@ public class CipherUtils {
         File encryptedFile = FileUtils.toEncryptedFile(originalFile);
 
         // Initialize needed streams
-        try (FileInputStream fis = new FileInputStream(originalFile);
-             BufferedInputStream in = new BufferedInputStream(fis);
-             FileOutputStream out = new FileOutputStream(encryptedFile);
-             BufferedOutputStream bos = new BufferedOutputStream(out)) {
+        try (FileInputStream input = new FileInputStream(originalFile);
+             BufferedInputStream bufferedInput = new BufferedInputStream(input);
+             FileOutputStream output = new FileOutputStream(encryptedFile);
+             BufferedOutputStream bufferedOutput = new BufferedOutputStream(output)) {
 
             // Initialize cipher
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, key, iv);
 
             // Write to buffer stream
-            writeToStream(cipher, in, bos);
+            writeToStream(cipher, bufferedInput, bufferedOutput);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -45,15 +46,15 @@ public class CipherUtils {
         File originalFile = FileUtils.toOriginalFile(encryptedFile);
 
         // Initialize needed streams
-        try (FileInputStream in = new FileInputStream(encryptedFile);
-             FileOutputStream out = new FileOutputStream(originalFile)) {
+        try (FileInputStream input = new FileInputStream(encryptedFile);
+             FileOutputStream output = new FileOutputStream(originalFile)) {
 
             // Initialize cipher
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.DECRYPT_MODE, key, iv);
 
             // Write to file output stream
-            writeToStream(cipher, in, out);
+            writeToStream(cipher, input, output);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -66,7 +67,7 @@ public class CipherUtils {
      */
     private static void writeToStream(Cipher cipher, InputStream input, OutputStream output) {
         // Initialize input buffer and length
-        byte[] inputBuffer = new byte[1024];
+        byte[] inputBuffer = new byte[INPUT_BUFFER_SIZE];
         int length;
 
         try {
